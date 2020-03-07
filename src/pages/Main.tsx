@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-export default class Home extends React.Component{
+export default class Main extends React.Component {
   public render(): JSX.Element {
     return (
       <>
@@ -12,12 +13,16 @@ export default class Home extends React.Component{
         </Row>
         <Row>
           <Col className="d-flex justify-content-center">
-            <Button variant="outline-dark" size="lg">Log in!</Button>
+            <Link to="/login">
+              <Button variant="outline-dark" size="lg">Log in!</Button>
+            </Link>
           </Col>
         </Row>
         <Row>
           <Col className="d-flex justify-content-center">
-            <Button variant="outline-dark" size="lg">Sign up!</Button>
+            <Link to="/register">
+              <Button variant="outline-dark" size="lg">Sign up!</Button>
+            </Link>
           </Col>
         </Row>
         <Row>
