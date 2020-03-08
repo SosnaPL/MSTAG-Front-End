@@ -2,13 +2,12 @@ import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-
-const API_URL = "http://25.64.141.174:8000/api/v1/users/profile/";
+import { API_URL } from '../components/constants'
 
 class Main extends React.Component<RouteComponentProps, any> {
 
   is_logged_in() {
-    return fetch(API_URL, {
+    return fetch(API_URL + "profile/", {
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       }

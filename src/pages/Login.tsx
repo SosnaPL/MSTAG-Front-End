@@ -2,9 +2,8 @@ import React from 'react';
 import { Form, FormControl, Button, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { Link } from 'react-router-dom';
+import { API_URL } from '../components/constants'
 import axios from 'axios';
-
-const API_URL = "http://25.64.141.174:8000/api/v1/users/login/";
 
 class Login extends React.Component<RouteComponentProps, any> {
 
@@ -27,7 +26,7 @@ class Login extends React.Component<RouteComponentProps, any> {
   logIn = e => {
     e.preventDefault();
     axios
-      .post(API_URL, this.state)
+      .post(API_URL + "login/", this.state)
       .then(response => {
         console.log("Logged in");
         localStorage.setItem("token", response.data.token);

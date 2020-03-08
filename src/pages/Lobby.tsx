@@ -1,15 +1,17 @@
 import React from 'react';
-import { Container, Button, Image } from 'react-bootstrap';
+import { Container, Button, Image, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
-
-const API_URL = "http://25.64.141.174:8000/api/v1/users/profile/";
+import { API_URL } from '../components/constants'
+import Friends from '../components/friends'
+import axios from 'axios';
 
 class Lobby extends React.Component<RouteComponentProps, any> {
 
   state = {
     nick: "",
     clan: "",
-    avatar: ""
+    avatar: "",
+    friends: []
   }
 
   logOut = () => {
@@ -18,11 +20,23 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   fetch_player_profile() {
-    return fetch(API_URL, { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    return fetch(API_URL + "profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
       .then(response => {
-        console.log(response)
+        axios.get(API_URL + "profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+          .then((res) => {
+            console.log(res.data)
+            this.setState({ friends: res.data })
+          })
+          .catch(() => {
+
+          })
         response.json().then(json => {
-          this.setState({ nick: json.username, clan: json.player.clan ? json.player.clan.name : "No clan", avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg" })
+          console.log(json.player.friends)
+          this.setState({
+            nick: json.username,
+            clan: json.player.clan ? json.player.clan.name : "No clan",
+            avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg"
+          })
         });
       });
   }
@@ -43,30 +57,43 @@ class Lobby extends React.Component<RouteComponentProps, any> {
       <Container>
         <div className="lobby_container">
           <div className="left">
-            <div className="avatar_holder">
+            <div className="avatar_holder p-2">
               <Image src={this.state.avatar} roundedCircle />
             </div>
-            <div className="shadow-lg flex-column p-3 chat rounded mt-2 chat">
+            <div className="chat rounded">
               Chat
             </div>
           </div>
           <div className="middle"></div>
           <div className="right">
-            <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
-              {this.state.nick}
-            </div>
-            <div className="d-flex justify-content-center shadow-sm p-2 rounded clan">
-              {this.state.clan}
-            </div>
-            <div className="d-flex justify-content-center mb-2">
-              <Button variant="outline-dark" size="sm" onClick={this.logOut}>
-                Log Out!
-              </Button>
+            <div className="user_info">
+              <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
+                {this.state.nick}
+              </div>
+              <div className="d-flex justify-content-center shadow-sm p-2 rounded clan">
+                {this.state.clan}
+              </div>
+              <div className="d-flex justify-content-center mb-2">
+                <Button variant="outline-dark" size="sm" onClick={this.logOut}>
+                  Log Out!
+                </Button>
+              </div>
             </div>
             <div className="lobby_team">
-              <div className="d-flex justify-content-center shadow-sm p-2 rounded party_member">
-                Ktos
+              <h2 className="d-flex justify-content-center">Party:</h2>
+              <div className="d-flex justify-content-center shadow-sm p-2 rounded party_member mb-2">
+                {this.state.nick}
               </div>
+            </div>
+            <div className="lobby_friends">
+              <h2 className="d-flex justify-content-center">Friends:</h2>
+              {this.state.friends.map((friend) => (
+                <Row key={friend.id}>
+                  <Col className="d-flex justify-content-start pb-3">
+                    <Friends friends={friend} />
+                  </Col>
+                </Row>
+              ))}
             </div>
           </div>
         </div>
