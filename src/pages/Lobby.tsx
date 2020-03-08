@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Container, Button, Image } from 'react-bootstrap';
+import { Container, Button, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 
 const API_URL = "http://25.64.141.174:8000/api/v1/users/profile/";
@@ -41,50 +41,43 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     }
     return (
       <Container>
-        <Row>
-          <Col className="p-2 col-3 d-flex justify-content-start">
-            <Image src={this.state.avatar} roundedCircle />
-          </Col>
-          <Col className="col-7"></Col>
-          <Col className="flex-column p-3 col-2">
+        <div className="lobby_container">
+          <div className="left">
+            <div className="avatar_holder">
+              <Image src={this.state.avatar} roundedCircle />
+            </div>
+            <div className="shadow-lg flex-column p-3 chat rounded mt-2 chat">
+              Chat
+            </div>
+          </div>
+          <div className="middle"></div>
+          <div className="right">
             <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
               {this.state.nick}
             </div>
             <div className="d-flex justify-content-center shadow-sm p-2 rounded clan">
               {this.state.clan}
             </div>
-            <div className="d-flex justify-content-center">
+            <div className="d-flex justify-content-center mb-2">
               <Button variant="outline-dark" size="sm" onClick={this.logOut}>
                 Log Out!
               </Button>
             </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="shadow-lg flex-column p-3 col-3 chat rounded mt-2">
-            Chat
-          </Col>
-          <Col className="col-7"></Col>
-          <Col className="flex-column p-3 col-2">
-            <div className="d-flex justify-content-center shadow-sm p-2 rounded party_member">
-              Ktos
+            <div className="lobby_team">
+              <div className="d-flex justify-content-center shadow-sm p-2 rounded party_member">
+                Ktos
+              </div>
             </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="d-flex justify-content-center">
-            <Button variant="outline-dark" size="sm">
-              Invite
-            </Button>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="d-flex justify-content-center">
-            <Button variant="outline-dark" size="lg">
-              Play!
-            </Button>
-          </Col>
-        </Row>
+          </div>
+        </div>
+        <div className="bottom">
+          <Button variant="outline-dark" size="sm">
+            Invite
+          </Button>
+          <Button variant="outline-dark" size="lg">
+            Play!
+          </Button>
+        </div>
       </Container>
     );
   }

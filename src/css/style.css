@@ -26,6 +26,7 @@ canvas {
   margin: 10px;
   text-decoration: none;
   color: white;
+  display: inline;
 }
 
 .btn:focus {
@@ -48,4 +49,64 @@ canvas {
 img {
   max-width: 100%;
   height: auto;
+}
+
+.lobby_container {
+  display: flex;
+  align-items: inherit;
+  position: relative;
+  flex-direction: row;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 20%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.middle {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 60%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.bottom_ {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 20%;
+  box-sizing: border-box;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 20%;
+  height: 80%;
+  box-sizing: border-box;
+}
+
+.bottom {
+  display: flex;
+  align-items: inherit;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lobby_team {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 20%;
+  box-sizing: border-box;
 }
