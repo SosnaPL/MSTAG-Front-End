@@ -50,7 +50,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "index.html",
       inject: true,
-      favicon: 'src/logo/favicon.ico'
+      favicon: "src/logo/favicon.ico"
     }),
     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/])
   ],

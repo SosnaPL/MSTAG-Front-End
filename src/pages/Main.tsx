@@ -1,8 +1,34 @@
 import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from "react-router";
 
-export default class Main extends React.Component {
+const API_URL = "http://25.64.141.174:8000/api/v1/users/profile/";
+
+class Main extends React.Component<RouteComponentProps, any> {
+
+  is_logged_in() {
+    return fetch(API_URL, {
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      }
+    }).then(() => {
+      return true;
+    }).catch(() => {
+      return false;
+    })
+  }
+
+  componentDidMount() {
+    if (localStorage.getItem("token")) {
+      if (this.is_logged_in()) {
+        this.props.history.push("/lobby")
+      } else {
+        localStorage.removeItem("token");
+      }
+    }
+  }
+
   public render(): JSX.Element {
     return (
       <>
@@ -27,10 +53,14 @@ export default class Main extends React.Component {
         </Row>
         <Row>
           <Col className="d-flex justify-content-center guest">
-            <Button variant="outline-dark" size="lg">Play as guest!</Button>
+            <Link to="/lobby">
+              <Button variant="outline-dark" size="lg">Play as guest!</Button>
+            </Link>
           </Col>
         </Row>
       </>
     );
   }
 }
+
+export default withRouter(Main)

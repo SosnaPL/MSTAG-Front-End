@@ -1,34 +1,51 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand|Sigmar+One&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Quicksand|Sigmar+One&display=swap");
 body {
-    font-family: 'Quicksand', sans-serif;
-    background-color: #111018;
+  font-family: "Quicksand", sans-serif;
+  background-color: #111018;
 }
 
 canvas {
-    position:fixed;
-    left:0;
-    top:0;
-    width:100vw;
-    height:100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 .app_container {
-    padding-top: 15px;
-    padding-bottom: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 .content_container {
-    background: rgba(23, 28, 34, 1);
-    color: white;
+  background: rgba(23, 28, 34, 0.8);
+  color: white;
 }
 
 .btn {
-    margin: 10px;
-    text-decoration: none;
-    color: white;
+  margin: 10px;
+  text-decoration: none;
+  color: white;
 }
 
-.btn:focus{
-    outline: none;
-    box-shadow: none;
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.chat,
+.nick,
+.clan,
+.party_member {
+  background-color: rgba(33, 36, 61, 0.6);
+}
+
+.nick,
+.clan {
+  margin-bottom: 10px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
