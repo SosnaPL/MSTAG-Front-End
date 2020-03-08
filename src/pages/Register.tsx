@@ -26,7 +26,7 @@ class Register extends React.Component<RouteComponentProps, any> {
   createUser = e => {
     e.preventDefault();
     axios
-      .post(API_URL + "register/", this.state)
+      .post(API_URL + "/users/register/", this.state)
       .then(() => {
         console.log("Registered");
         this.props.history.push("/login");

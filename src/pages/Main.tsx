@@ -7,7 +7,7 @@ import { API_URL } from '../components/constants'
 class Main extends React.Component<RouteComponentProps, any> {
 
   is_logged_in() {
-    return fetch(API_URL + "profile/", {
+    return fetch(API_URL + "/users/profile/", {
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       }

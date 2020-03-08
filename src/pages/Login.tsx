@@ -26,7 +26,7 @@ class Login extends React.Component<RouteComponentProps, any> {
   logIn = e => {
     e.preventDefault();
     axios
-      .post(API_URL + "login/", this.state)
+      .post(API_URL + "/users/login/", this.state)
       .then(response => {
         console.log("Logged in");
         localStorage.setItem("token", response.data.token);

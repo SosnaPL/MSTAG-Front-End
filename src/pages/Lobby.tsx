@@ -20,9 +20,9 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   fetch_player_profile() {
-    return fetch(API_URL + "profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    return fetch(API_URL + "/users/profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
       .then(response => {
-        axios.get(API_URL + "profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+        axios.get(API_URL + "/users/profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
           .then((res) => {
             console.log(res.data)
             this.setState({ friends: res.data })
@@ -39,6 +39,16 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           })
         });
       });
+  }
+
+  play = () => {
+    axios.get(API_URL + "/game/request/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+      .then((res) => {
+        let ws = new WebSocket(res.data)
+        ws.onopen = () => {
+          console.log("connected")
+        }
+      })
   }
 
   componentDidMount() {
@@ -58,7 +68,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
-              <Image src={this.state.avatar} roundedCircle />
+              <Image src={this.state.avatar} rounded />
             </div>
             <div className="chat rounded">
               Chat
@@ -85,8 +95,8 @@ class Lobby extends React.Component<RouteComponentProps, any> {
                 {this.state.nick}
               </div>
             </div>
+            <h2 className="d-flex justify-content-center">Friends:</h2>
             <div className="lobby_friends">
-              <h2 className="d-flex justify-content-center">Friends:</h2>
               {this.state.friends.map((friend) => (
                 <Row key={friend.id}>
                   <Col className="d-flex justify-content-start pb-3">
@@ -101,7 +111,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           <Button variant="outline-dark" size="sm">
             Invite
           </Button>
-          <Button variant="outline-dark" size="lg">
+          <Button variant="outline-dark" size="lg" onClick={this.play}>
             Play!
           </Button>
         </div>
