@@ -6,29 +6,47 @@ import { API_URL } from '../components/constants'
 
 class Main extends React.Component<RouteComponentProps, any> {
 
-  is_logged_in() {
-    return fetch(API_URL + "/users/profile/", {
-      headers: {
-        Authorization: "Token " + localStorage.getItem("token")
-      }
-    }).then(() => {
-      return true;
-    }).catch(() => {
-      return false;
-    })
+  state = {
+    dupa: false
   }
 
-  componentDidMount() {
+  is_logged_in() {
     if (localStorage.getItem("token")) {
-      if (this.is_logged_in()) {
-        this.props.history.push("/lobby")
-      } else {
-        localStorage.removeItem("token");
-      }
+      return fetch(API_URL + "/users/profile/", {
+        headers: {
+          Authorization: "Token " + localStorage.getItem("token")
+        }
+      })
+        .then((res) => {
+          if (!res.ok) {
+            localStorage.removeItem("token");
+            this.setState({ dupa: true })
+            return
+          }
+          else {
+            this.props.history.push("/lobby")
+          }
+        })
+        .catch(() => {
+        })
+    }
+    else {
+      this.setState({ dupa: true })
     }
   }
 
+  componentDidMount() {
+    this.is_logged_in()
+  }
+
   public render(): JSX.Element {
+    if (!this.state.dupa) {
+      return (
+        <div className="d-flex justify-content-center">
+          <h2>Loading...</h2>
+        </div>
+      )
+    }
     return (
       <>
         <Row>

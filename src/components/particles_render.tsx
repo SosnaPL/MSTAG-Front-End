@@ -4,9 +4,9 @@ import { isMobile } from 'react-device-detect';
 
 export default class ParticlesRenderer extends React.Component {
   public render(): JSX.Element {
-    if(!isMobile) {
+    if (!isMobile) {
       return (
-        <Particles 
+        <Particles
           params={{
             particles: {
               number: {
