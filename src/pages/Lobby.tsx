@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Button, Image, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { API_URL } from '../components/constants'
-import Notifications from '../components/notifications'
+import Notifications from '../components/notification_container'
 import Friends from '../components/friends'
 import axios from 'axios';
 
@@ -92,7 +92,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
       )
     }
     return (
-      <Container>
+      <Container className="klamie">
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
