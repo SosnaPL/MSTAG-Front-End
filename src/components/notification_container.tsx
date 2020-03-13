@@ -4,11 +4,12 @@ import { API_URL } from './constants';
 import Notification, { TeamInviteNotification } from './notification'
 import axios from 'axios';
 
-export default class Notifications extends React.Component<{}, { notifications: any[] }> {
+export default class Notifications extends React.Component<{}, { notifications: any[], notification_socket: WebSocket }> {
   constructor(props) {
     super(props)
     this.state = {
       notifications: [],
+      notification_socket: null,
     }
     this.delete = this.delete.bind(this);
   }
@@ -53,12 +54,16 @@ export default class Notifications extends React.Component<{}, { notifications: 
         ws.onclose = (_e) => {
           setTimeout(this.ws_server, 10000);
         }
+        this.setState({ notification_socket: ws });
       })
       .catch((err) => {
         console.log(err)
       })
   }
 
+  componentWillUnmount() {
+    this.state.notification_socket.close();
+  }
 
   componentDidMount() {
     this.ws_server()

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Image, Row, Col } from 'react-bootstrap';
+import { Button, Image, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { API_URL } from '../components/constants'
 import Notifications from '../components/notification_container'
@@ -13,7 +13,8 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     clan: "",
     avatar: "",
     friends: [],
-    friends_online: []
+    friends_online: [],
+    friend_update_interval: null,
   }
 
   logOut = () => {
@@ -24,12 +25,16 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   fetch_player_profile() {
     return fetch(API_URL + "/users/profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
       .then(response => {
+        console.log("WAKE ME UP INSIDE");
         axios.get(API_URL + "/users/profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
           .then((res) => {
+            console.log("frick");
             console.log(res.data)
             this.setState({ friends: res.data })
           })
-          .catch(() => {
+          .catch((e) => {
+            console.log("CANT WAKE UP");
+            console.log(e.data);
           })
         response.json().then(json => {
           this.setState({
@@ -64,15 +69,11 @@ class Lobby extends React.Component<RouteComponentProps, any> {
       })
   }
 
-  invite = () => {
-
-  }
-
   componentDidMount() {
     //console.log(new URLSearchParams(window.location.href.split("?")[1]).get("invite"))
     this.fetch_player_profile();
     let self = this;
-    window.setInterval(function activity() {
+    let benis = window.setInterval(function activity() {
       axios.get(API_URL + "/users/profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
         .then((res) => {
           self.setState({ friends: res.data })
@@ -81,6 +82,11 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           //localStorage.removeItem("token")
         })
     }, 60000)
+    this.setState({ friend_update_interval: benis });
+  }
+
+  componentWillUnmount() {
+    window.clearInterval(this.state.friend_update_interval);
   }
 
   public render(): JSX.Element {
@@ -92,7 +98,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
       )
     }
     return (
-      <Container className="klamie">
+      <div className="klamie">
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
@@ -105,16 +111,6 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           <div className="middle">
             <div className="notifications">
               <Notifications />
-            </div>
-            <div className="active_friends">
-              {this.state.friends.filter((friend) => { return friend.is_online }).map((friend) => (
-                <Row key={friend.id}>
-                  {console.log(friend.last_seen, friend.username)}
-                  <Col className="d-flex justify-content-start pb-3">
-                    <Friends friends={friend} />
-                  </Col>
-                </Row>
-              ))}
             </div>
           </div>
           <div className="right">
@@ -139,8 +135,17 @@ class Lobby extends React.Component<RouteComponentProps, any> {
             </div>
             <h2 className="d-flex justify-content-center">Friends:</h2>
             <div className="lobby_friends">
-              {this.state.friends.map((friend) => (
+              {this.state.friends.filter((friend) => { return friend.is_online }).map((friend) => (
                 <Row key={friend.id}>
+                  {console.log(friend.last_seen, friend.username)}
+                  <Col className="d-flex justify-content-start pb-3">
+                    <Friends friends={friend} />
+                  </Col>
+                </Row>
+              ))}
+              {this.state.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
+                <Row key={friend.id}>
+                  {console.log(friend.last_seen, friend.username)}
                   <Col className="d-flex justify-content-start pb-3">
                     <Friends friends={friend} />
                   </Col>
@@ -150,14 +155,11 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           </div>
         </div>
         <div className="bottom">
-          <Button variant="outline-dark" size="sm" onClick={this.invite}>
-            Invite
-          </Button>
           <Button variant="outline-dark" size="lg" onClick={this._play}>
             Play!
           </Button>
         </div>
-      </Container>
+      </div>
     );
   }
 }

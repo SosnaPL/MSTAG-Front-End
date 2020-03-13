@@ -77,6 +77,50 @@ canvas {
   background-color: rgba(33, 36, 61, 0.6);
 }
 
+.friend_container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.invite_icon {
+  position: absolute;
+  right: 0;
+  top: 1%;
+  transition: ease-in 0.3s;
+}
+
+.chat_icon {
+  position: absolute;
+  right: 0;
+  bottom: 1%;
+  transition: ease-in 0.3s;
+}
+
+svg:hover {
+  color: red;
+  transition: ease-in-out 0.3s;
+}
+
+.card-text {
+  margin: 0;
+}
+
+.friend_status {
+  padding-right: 0px;
+  width: 100%;
+  position: relative;
+}
+
+.invite_button {
+  width: 50px;
+  height: 10px;
+  margin: 0;
+  font-size: 9px;
+  justify-content: center;
+}
+
 .nick,
 .clan {
   margin-bottom: 10px;
@@ -159,34 +203,22 @@ canvas {
   flex-direction: column;
   position: relative;
   width: 100%;
-  height: 20%;
-  max-height: 20%;
+  height: 100%;
+  max-height: 100%;
   box-sizing: border-box;
   align-items: center;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-.active_friends {
+.bottom {
   display: flex;
-  flex-direction: column;
   position: relative;
-  width: 100%;
-  max-height: 80%;
-  box-sizing: border-box;
+  flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  overflow-y: hidden;
-  padding-top: 10px;
-}
-
-.bottom_ {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  width: 100%;
+  justify-content: center;
   height: 20%;
-  box-sizing: border-box;
+  width: 100%;
 }
 
 .right {
@@ -200,6 +232,8 @@ canvas {
 
 .card {
   width: 100%;
+  border-radius: 0%;
+  border: none;
 }
 
 .user_info {
@@ -230,16 +264,6 @@ canvas {
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-.bottom {
-  display: flex;
-  align-items: inherit;
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  height: 20%;
-  width: 100%;
 }
 
 .game_container > canvas {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { API_URL } from '../components/constants'
+import { API_URL } from '../components/constants';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusCircle, faCommentDots } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 interface FriendsProps {
@@ -58,10 +60,18 @@ export default class Friends extends React.Component<{ friends: FriendsProps }> 
 
     if (is_online) {
       return (
-        <Card className="shadow rounded d-flex align-items-center" onClick={() => this.invite_friend(id)}>
-          <Card.Title>{username}</Card.Title>
-          <Card.Text>Online</Card.Text>
-        </Card>
+        <div className="friend_container">
+          <div className="friend_status">
+            <Card className="d-flex align-items-center">
+              <Card.Title>{username}</Card.Title>
+              <Card.Text>Online</Card.Text>
+              <div className="invite_container" style={{ backgroundColor: "rgba(33, 36, 61, 0.6)" }}>
+                <FontAwesomeIcon className="invite_icon" size="1x" icon={faPlusCircle} onClick={() => this.invite_friend(id)} />
+                <FontAwesomeIcon className="chat_icon" size="1x" icon={faCommentDots} />
+              </div>
+            </Card>
+          </div>
+        </div>
       );
     }
     else {
