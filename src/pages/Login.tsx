@@ -2,8 +2,7 @@ import React from 'react';
 import { Form, FormControl, Button, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { Link } from 'react-router-dom';
-import { API_URL } from '../components/constants'
-import axios from 'axios';
+import { post } from '../components/constants'
 
 class Login extends React.Component<RouteComponentProps, any> {
 
@@ -25,14 +24,14 @@ class Login extends React.Component<RouteComponentProps, any> {
 
   logIn = e => {
     e.preventDefault();
-    axios
-      .post(API_URL + "/users/login/", this.state)
+    post("/users/login/", this.state)
       .then(response => {
         console.log("Logged in");
         localStorage.setItem("token", response.data.token);
         this.props.history.push("/lobby")
       })
       .catch(error => {
+        console.log(error);
         this.setState({ error_msg: error.response.data.detail })
       });
   };

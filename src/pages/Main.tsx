@@ -11,6 +11,7 @@ class Main extends React.Component<RouteComponentProps, any> {
   }
 
   is_logged_in() {
+    console.log("WAKE ME UP INSIDE");
     if (localStorage.getItem("token")) {
       return fetch(API_URL + "/users/profile/", {
         headers: {
@@ -19,11 +20,13 @@ class Main extends React.Component<RouteComponentProps, any> {
       })
         .then((res) => {
           if (!res.ok) {
+            console.log("fucced up token");
             localStorage.removeItem("token");
             this.setState({ dupa: true })
             return
           }
           else {
+            console.log("to lobby");
             this.props.history.push("/lobby")
           }
         })

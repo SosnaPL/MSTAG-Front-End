@@ -2,9 +2,7 @@ import React from 'react';
 import { Button, Form, FormControl, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL } from '../components/constants'
-import axios from 'axios';
-
+import { post } from '../components/constants'
 class Register extends React.Component<RouteComponentProps, any> {
   state = {
     username: "",
@@ -25,8 +23,7 @@ class Register extends React.Component<RouteComponentProps, any> {
 
   createUser = e => {
     e.preventDefault();
-    axios
-      .post(API_URL + "/users/register/", this.state)
+    post("/users/register/", this.state)
       .then(() => {
         console.log("Registered");
         this.props.history.push("/login");

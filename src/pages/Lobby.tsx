@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, Image, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL } from '../components/constants'
-import Notifications from '../components/notification_container'
-import Friends from '../components/friends'
-import axios from 'axios';
+import { API_URL, get, post } from '../components/constants';
+import Notifications from '../components/notification_container';
+import Friends from '../components/friends';
+import Party from '../components/party'
 
 class Lobby extends React.Component<RouteComponentProps, any> {
 
@@ -15,6 +15,36 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     friends: [],
     friends_online: [],
     friend_update_interval: null,
+    party: [],
+    party_leader: null,
+  }
+
+  constructor(props) {
+    super(props)
+    this.kick_member = this.kick_member.bind(this);
+  }
+
+  set_party() {
+    get("/team")
+      .then((res) => {
+        this.setState({ party: res.data.members, party_leader: res.data.leader })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  kick_member(id) {
+    this.setState({
+      party: this.state.party.filter(el => el.id != id)
+    })
+    get("/team/kick/" + id.toString())
+      .then((res) => {
+        console.log(res.data)
+      })
+      .catch((err) => {
+        console.log(err.data)
+      })
   }
 
   logOut = () => {
@@ -23,19 +53,23 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   fetch_player_profile() {
-    return fetch(API_URL + "/users/profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    get("/team")
+      .then((res) => {
+        console.log(res)
+        this.setState({ party: res.data.members, party_leader: res.data.leader })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    get("/users/profile/friends/")
+      .then((res) => {
+        this.setState({ friends: res.data })
+      })
+      .catch((e) => {
+        console.log(e.data);
+      })
+    fetch(API_URL + "/users/profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
       .then(response => {
-        console.log("WAKE ME UP INSIDE");
-        axios.get(API_URL + "/users/profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
-          .then((res) => {
-            console.log("frick");
-            console.log(res.data)
-            this.setState({ friends: res.data })
-          })
-          .catch((e) => {
-            console.log("CANT WAKE UP");
-            console.log(e.data);
-          })
         response.json().then(json => {
           this.setState({
             nick: json.username,
@@ -47,7 +81,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   play = () => {
-    axios.get(API_URL + "/game/request/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    get("/game/request/")
       .then((res) => {
         let ws = new WebSocket(res.data)
         ws.onopen = () => {
@@ -60,7 +94,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   _play = () => {
-    axios.post(API_URL + "/notification/send/", { text: "ziemniak", time: Date.now() }, { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    post("/notification/send/", { text: "ziemniak", time: Date.now() })
       .then((res) => {
         console.log(res.data)
       })
@@ -70,16 +104,16 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   componentDidMount() {
-    //console.log(new URLSearchParams(window.location.href.split("?")[1]).get("invite"))
     this.fetch_player_profile();
     let self = this;
     let benis = window.setInterval(function activity() {
-      axios.get(API_URL + "/users/profile/friends/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+      get("/users/profile/friends/")
         .then((res) => {
           self.setState({ friends: res.data })
         })
         .catch(() => {
-          //localStorage.removeItem("token")
+          localStorage.removeItem("token")
+          self.props.history.push("/")
         })
     }, 60000)
     this.setState({ friend_update_interval: benis });
@@ -110,7 +144,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           </div>
           <div className="middle">
             <div className="notifications">
-              <Notifications />
+              <Notifications set_party={this.set_party.bind(this)} />
             </div>
           </div>
           <div className="right">
@@ -129,15 +163,17 @@ class Lobby extends React.Component<RouteComponentProps, any> {
             </div>
             <div className="lobby_team">
               <h2 className="d-flex justify-content-center">Party:</h2>
-              <div className="d-flex justify-content-center shadow-sm p-2 rounded party_member mb-2">
-                {this.state.nick}
-              </div>
+              <Party
+                kick={this.kick_member.bind(this)}
+                party={this.state.party}
+                leader={this.state.party_leader}
+                user_nick={this.state.nick}
+              />
             </div>
             <h2 className="d-flex justify-content-center">Friends:</h2>
             <div className="lobby_friends">
               {this.state.friends.filter((friend) => { return friend.is_online }).map((friend) => (
                 <Row key={friend.id}>
-                  {console.log(friend.last_seen, friend.username)}
                   <Col className="d-flex justify-content-start pb-3">
                     <Friends friends={friend} />
                   </Col>
@@ -145,7 +181,6 @@ class Lobby extends React.Component<RouteComponentProps, any> {
               ))}
               {this.state.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
                 <Row key={friend.id}>
-                  {console.log(friend.last_seen, friend.username)}
                   <Col className="d-flex justify-content-start pb-3">
                     <Friends friends={friend} />
                   </Col>

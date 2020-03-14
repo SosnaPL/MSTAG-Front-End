@@ -1,12 +1,10 @@
 import React from 'react';
-import { API_URL } from './constants';
+import { get } from './constants';
 import { Button, Row, Col, Card } from 'react-bootstrap';
-import axios from 'axios';
 
 
 interface NotificationsProps {
   team_id?: number,
-  type: string,
   text: string,
   delete: Function,
   time: number,
@@ -18,7 +16,6 @@ export default class Notification extends React.Component<NotificationsProps> {
   }
 
   public render(): JSX.Element {
-    console.log("Render base notification");
     return (
       <Row>
         <Col className="d-flex justify-content-start pb-3">
@@ -37,7 +34,7 @@ export default class Notification extends React.Component<NotificationsProps> {
 export class TeamInviteNotification extends Notification {
   accept_invite(id: number) {
     this.delete();
-    axios.get(API_URL + "/team/join/" + id.toString() + "/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    get("/team/join/" + id.toString() + "/")
       .then(() => {
 
       })
