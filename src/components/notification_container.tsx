@@ -4,7 +4,7 @@ import { API_URL } from './constants';
 import Notification, { TeamInviteNotification } from './notification'
 import axios from 'axios';
 
-export default class Notifications extends React.Component<{ set_party: Function }, { notifications: any[], notification_socket: WebSocket }> {
+export default class Notifications extends React.Component<{ set_party: Function, player_id: number }, { notifications: any[], notification_socket: WebSocket }> {
   constructor(props) {
     super(props)
     this.state = {
@@ -25,7 +25,7 @@ export default class Notifications extends React.Component<{ set_party: Function
       .then((res) => {
         let ws = new WebSocket(res.data.notification)
         ws.onopen = () => {
-          ws.send(localStorage.getItem("token"))
+          ws.send(JSON.stringify([localStorage.getItem("token"), this.props.player_id]))
           console.log("connected")
         }
         ws.onmessage = (e) => {
@@ -65,6 +65,16 @@ export default class Notifications extends React.Component<{ set_party: Function
             text = data.teammate_name + " has left your team."
             this.props.set_party();
           }
+          else if (data.type == "left team") {
+            text = "You have left your team."
+            this.props.set_party();
+          }
+          else if (data.type == "not the leader") {
+            text = "You are not the leader"
+          }
+          else if (data.type == "invitation declined") {
+            text = data.username + " has declined your invitation"
+          }
 
           let notif_instance =
             <NewNotif
@@ -102,7 +112,7 @@ export default class Notifications extends React.Component<{ set_party: Function
     return (
       <>
         {
-          this.state.notifications.reverse().map((notification: Notification, index) => (
+          this.state.notifications.sort((n1, n2) => { return n2.props.time - n1.props.time }).map((notification: Notification, index) => (
             <div key={index}>{notification} </div>
           ))
         }

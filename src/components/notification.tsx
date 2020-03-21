@@ -42,6 +42,18 @@ export class TeamInviteNotification extends Notification {
 
       })
   }
+
+  decline_invite(id: number) {
+    this.delete();
+    get("/team/decline/" + id.toString() + "/")
+      .then(() => {
+
+      })
+      .catch(() => {
+
+      })
+  }
+
   public render(): JSX.Element {
     console.log("Render team notification");
     return (
@@ -54,7 +66,7 @@ export class TeamInviteNotification extends Notification {
                 <Button onClick={() => this.accept_invite(this.props.team_id)}>
                   Accept!
                 </Button>
-                <Button onClick={this.delete.bind(this)}>Decline.</Button>
+                <Button onClick={() => this.decline_invite(this.props.team_id)}>Decline.</Button>
               </Col>
             </Row>
           </Card>

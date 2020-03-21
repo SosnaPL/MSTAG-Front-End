@@ -9,19 +9,21 @@ import Party from '../components/party'
 class Lobby extends React.Component<RouteComponentProps, any> {
 
   state = {
+    id: 0,
     nick: "",
     clan: "",
     avatar: "",
     friends: [],
-    friends_online: [],
     friend_update_interval: null,
     party: [],
     party_leader: null,
+    notification_retrieved: [],
+    modal_visiblity: "none"
   }
 
-  constructor(props) {
-    super(props)
-    this.kick_member = this.kick_member.bind(this);
+  modal = () => {
+    console.log("sad")
+    this.setState({ modal_visiblity: "flex" })
   }
 
   set_party() {
@@ -31,19 +33,6 @@ class Lobby extends React.Component<RouteComponentProps, any> {
       })
       .catch((err) => {
         console.log(err)
-      })
-  }
-
-  kick_member(id) {
-    this.setState({
-      party: this.state.party.filter(el => el.id != id)
-    })
-    get("/team/kick/" + id.toString())
-      .then((res) => {
-        console.log(res.data)
-      })
-      .catch((err) => {
-        console.log(err.data)
       })
   }
 
@@ -74,7 +63,8 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           this.setState({
             nick: json.username,
             clan: json.player.clan ? json.player.clan.name : "No clan",
-            avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg"
+            avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg",
+            id: json.player.id
           })
         });
       });
@@ -144,7 +134,10 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           </div>
           <div className="middle">
             <div className="notifications">
-              <Notifications set_party={this.set_party.bind(this)} />
+              <Notifications set_party={this.set_party.bind(this)} player_id={this.state.id} />
+            </div>
+            <div className="modal" style={{ display: this.state.modal_visiblity }}>
+              Username: <input type="text" />
             </div>
           </div>
           <div className="right">
@@ -161,10 +154,9 @@ class Lobby extends React.Component<RouteComponentProps, any> {
                 </Button>
               </div>
             </div>
+            <h2 className="d-flex justify-content-center">Party:</h2>
             <div className="lobby_team">
-              <h2 className="d-flex justify-content-center">Party:</h2>
               <Party
-                kick={this.kick_member.bind(this)}
                 party={this.state.party}
                 leader={this.state.party_leader}
                 user_nick={this.state.nick}
@@ -186,6 +178,9 @@ class Lobby extends React.Component<RouteComponentProps, any> {
                   </Col>
                 </Row>
               ))}
+              <div className="d-flex justify-content-center">
+                <Button variant="outline-dark" onClick={this.modal}>Invite Friends</Button>
+              </div>
             </div>
           </div>
         </div>

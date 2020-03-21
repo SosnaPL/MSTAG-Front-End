@@ -2,14 +2,24 @@ import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { get } from '../components/constants'
+import TeamButton from '../components/team_button'
 
-export default class Party extends React.Component<{ kick: Function, party: any, leader: any, user_nick: string }, {}> {
+export default class Party extends React.Component<{ party: any, leader: any, user_nick: string }, {}> {
 
   kick_member(id) {
-    this.props.kick(id)
+    get("/team/kick/" + id.toString())
+      .then((res) => {
+        console.log(res.data)
+      })
+      .catch((err) => {
+        console.log(err.data)
+      })
   }
 
   public render(): JSX.Element {
+    console.log("Leader: ", this.props.leader);
+    console.log("Nick: ", this.props.user_nick)
     if (!this.props.leader) {
       return (
         <div className="party_container">
@@ -45,6 +55,7 @@ export default class Party extends React.Component<{ kick: Function, party: any,
               </Col>
             </Row>
           ))}
+          <TeamButton members={this.props.party.length} />
         </div>
       )
     }
@@ -71,6 +82,7 @@ export default class Party extends React.Component<{ kick: Function, party: any,
                 </Col>
               </Row>
             ))}
+          <TeamButton members={this.props.party.length} />
         </div>
       );
     }

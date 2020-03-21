@@ -44,6 +44,7 @@ export default class Friends extends React.Component<{ friends: FriendsProps }> 
 
 
   invite_friend = (id: number) => {
+    console.log("sending invite");
     axios.get(API_URL + "/team/invite/" + id.toString(), { headers: { Authorization: "Token " + localStorage.getItem("token") } })
       .then(() => {
       })
