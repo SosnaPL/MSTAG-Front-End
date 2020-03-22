@@ -9,8 +9,7 @@ export default class Party extends React.Component<{ party: any, leader: any, us
 
   kick_member(id) {
     get("/team/kick/" + id.toString())
-      .then((res) => {
-        console.log(res.data)
+      .then(() => {
       })
       .catch((err) => {
         console.log(err.data)
@@ -18,8 +17,6 @@ export default class Party extends React.Component<{ party: any, leader: any, us
   }
 
   public render(): JSX.Element {
-    console.log("Leader: ", this.props.leader);
-    console.log("Nick: ", this.props.user_nick)
     if (!this.props.leader) {
       return (
         <div className="party_container">

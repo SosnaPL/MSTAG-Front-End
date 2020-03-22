@@ -1,10 +1,12 @@
 import React from 'react';
 import { Button, Image, Row, Col } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL, get, post } from '../components/constants';
+import { API_URL, get, CurrentUser } from '../components/constants';
 import Notifications from '../components/notification_container';
 import Friends from '../components/friends';
-import Party from '../components/party'
+import Party from '../components/party';
+import Chat from '../components/chat';
+import InviteFriend from '../components/invite_friend';
 
 class Lobby extends React.Component<RouteComponentProps, any> {
 
@@ -14,16 +16,24 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     clan: "",
     avatar: "",
     friends: [],
-    friend_update_interval: null,
     party: [],
-    party_leader: null,
-    notification_retrieved: [],
-    modal_visiblity: "none"
+    party_leader: null
   }
 
-  modal = () => {
-    console.log("sad")
-    this.setState({ modal_visiblity: "flex" })
+  constructor(props) {
+    super(props)
+    this.updateFriendOnline = this.updateFriendOnline.bind(this)
+  }
+
+  updateFriends() {
+    console.log("update_friends")
+    get("/users/profile/friends/")
+      .then((res) => {
+        this.setState({ friends: res.data })
+      })
+      .catch((e) => {
+        console.log(e.data);
+      })
   }
 
   set_party() {
@@ -44,7 +54,6 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   fetch_player_profile() {
     get("/team")
       .then((res) => {
-        console.log(res)
         this.setState({ party: res.data.members, party_leader: res.data.leader })
       })
       .catch((err) => {
@@ -66,6 +75,8 @@ class Lobby extends React.Component<RouteComponentProps, any> {
             avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg",
             id: json.player.id
           })
+
+          CurrentUser.username = json.username;
         });
       });
   }
@@ -84,33 +95,23 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   _play = () => {
-    post("/notification/send/", { text: "ziemniak", time: Date.now() })
-      .then((res) => {
-        console.log(res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    this.props.history.push("/game")
+  }
+
+  updateFriendOnline = (friend_id, new_status) => {
+    let friends = this.state.friends;
+    for (let friend of friends) {
+      if (friend.id == friend_id) {
+        friend.is_online = new_status;
+        friend.last_seen = 1;
+        break;
+      }
+    }
+    this.setState({ friends: friends });
   }
 
   componentDidMount() {
     this.fetch_player_profile();
-    let self = this;
-    let benis = window.setInterval(function activity() {
-      get("/users/profile/friends/")
-        .then((res) => {
-          self.setState({ friends: res.data })
-        })
-        .catch(() => {
-          localStorage.removeItem("token")
-          self.props.history.push("/")
-        })
-    }, 60000)
-    this.setState({ friend_update_interval: benis });
-  }
-
-  componentWillUnmount() {
-    window.clearInterval(this.state.friend_update_interval);
   }
 
   public render(): JSX.Element {
@@ -129,15 +130,12 @@ class Lobby extends React.Component<RouteComponentProps, any> {
               <Image src={this.state.avatar} rounded />
             </div>
             <div className="chat rounded">
-              Chat
+              <Chat />
             </div>
           </div>
           <div className="middle">
             <div className="notifications">
-              <Notifications set_party={this.set_party.bind(this)} player_id={this.state.id} />
-            </div>
-            <div className="modal" style={{ display: this.state.modal_visiblity }}>
-              Username: <input type="text" />
+              <Notifications set_party={this.set_party.bind(this)} update_friends={this.updateFriends.bind(this)} player_id={this.state.id} update_friend={this.updateFriendOnline.bind(this)} />
             </div>
           </div>
           <div className="right">
@@ -167,20 +165,18 @@ class Lobby extends React.Component<RouteComponentProps, any> {
               {this.state.friends.filter((friend) => { return friend.is_online }).map((friend) => (
                 <Row key={friend.id}>
                   <Col className="d-flex justify-content-start pb-3">
-                    <Friends friends={friend} />
+                    <Friends friends={friend} update_friends={this.updateFriends.bind(this)} />
                   </Col>
                 </Row>
               ))}
               {this.state.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
                 <Row key={friend.id}>
                   <Col className="d-flex justify-content-start pb-3">
-                    <Friends friends={friend} />
+                    <Friends friends={friend} update_friends={this.updateFriends.bind(this)} />
                   </Col>
                 </Row>
               ))}
-              <div className="d-flex justify-content-center">
-                <Button variant="outline-dark" onClick={this.modal}>Invite Friends</Button>
-              </div>
+              <InviteFriend />
             </div>
           </div>
         </div>

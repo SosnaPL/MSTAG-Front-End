@@ -7,6 +7,7 @@ export default class ParticlesRenderer extends React.Component {
     if (!isMobile) {
       return (
         <Particles
+          canvasClassName="particles"
           params={{
             particles: {
               number: {

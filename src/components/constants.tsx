@@ -15,3 +15,5 @@ export function post(url, data): Promise<any> {
     }
 
 }
+
+export const CurrentUser = { username: "" };

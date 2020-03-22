@@ -7,6 +7,7 @@ const Main = React.lazy(() => import('./pages/Main'));
 const Register = React.lazy(() => import('./pages/Register'))
 const Login = React.lazy(() => import('./pages/Login'))
 const Lobby = React.lazy(() => import('./pages/Lobby'))
+const Game = React.lazy(() => import('./components/game'))
 
 export default class App extends React.Component {
   public render(): JSX.Element {
@@ -27,6 +28,7 @@ export default class App extends React.Component {
                 <Route path="/register" component={Register} />
                 <Route path="/login" component={Login} />
                 <Route path="/lobby" component={Lobby} />
+                <Route path="/game" component={Game} />
               </Switch>
             </React.Suspense>
           </MemoryRouter>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
+import { get } from '../components/constants'
 import { API_URL } from '../components/constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 interface FriendsProps {
@@ -12,13 +13,10 @@ interface FriendsProps {
   is_online: boolean;
 }
 
-export default class Friends extends React.Component<{ friends: FriendsProps }> {
+export default class Friends extends React.Component<{ friends: FriendsProps, update_friends: Function }> {
 
-  timeSince(date: number) {
-
-    var seconds = Math.floor((Date.now() - date) / 1000);
-
-    var interval = Math.floor(seconds / 31536000);
+  timeSince(seconds: number) {
+    let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
       return interval + " years";
@@ -53,6 +51,16 @@ export default class Friends extends React.Component<{ friends: FriendsProps }> 
       })
   }
 
+  remove_friend = (id: number) => {
+    get('/users/profile/friends/remove/' + id.toString() + "/")
+      .then(() => {
+        this.props.update_friends()
+      })
+      .catch(() => {
+
+      })
+  }
+
   public render(): JSX.Element {
     const {
       username, last_seen, id, is_online
@@ -67,7 +75,7 @@ export default class Friends extends React.Component<{ friends: FriendsProps }> 
               <Card.Text>Online</Card.Text>
               <div className="invite_container" style={{ backgroundColor: "rgba(33, 36, 61, 0.6)" }}>
                 <FontAwesomeIcon className="invite_icon" size="1x" icon={faPlusCircle} onClick={() => this.invite_friend(id)} />
-                <FontAwesomeIcon className="chat_icon" size="1x" icon={faCommentDots} />
+                <FontAwesomeIcon className="remove_icon" size="1x" icon={faUserTimes} onClick={() => this.remove_friend(id)} />
               </div>
             </Card>
           </div>
