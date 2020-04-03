@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { get } from '../components/constants'
 import { API_URL } from '../components/constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,25 +19,25 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return interval + " years";
+      return interval + "y";
     }
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return interval + " months";
+      return interval + "mt";
     }
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return interval + " days";
+      return interval + "d";
     }
     interval = Math.floor(seconds / 3600);
     if (interval > 1) {
-      return interval + " hours";
+      return interval + "h";
     }
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return interval + " minutes";
+      return interval + "m";
     }
-    return Math.floor(seconds) + " seconds";
+    return Math.floor(seconds) + "s";
   }
 
 
@@ -68,28 +68,52 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
 
     if (is_online) {
       return (
-        <div className="friend_container">
-          <div className="friend_status">
-            <Card className="d-flex align-items-center">
-              <Card.Title>{username}</Card.Title>
-              <Card.Text>Online</Card.Text>
-              <div className="invite_container" style={{ backgroundColor: "rgba(33, 36, 61, 0.6)" }}>
-                <FontAwesomeIcon className="invite_icon" size="1x" icon={faPlusCircle} onClick={() => this.invite_friend(id)} />
-                <FontAwesomeIcon className="remove_icon" size="1x" icon={faUserTimes} onClick={() => this.remove_friend(id)} />
-              </div>
-            </Card>
+        <div className="friend_container p-2 rounded">
+          <div className="friend_info">
+            🟢&nbsp;{username}
+          </div>
+          <div className="friend_menu">
+            <FontAwesomeIcon className="remove_icon" size="1x" icon={faUserTimes} onClick={() => this.remove_friend(id)} />
+            <FontAwesomeIcon className="invite_icon" size="1x" icon={faPlusCircle} onClick={() => this.invite_friend(id)} />
           </div>
         </div>
       );
     }
     else {
       return (
-        <Card className="shadow rounded d-flex align-items-center">
-          <Card.Title>{username}</Card.Title>
-          <Card.Text>Last seen: {this.timeSince(last_seen)} ago</Card.Text>
-        </Card>
+        <div className="friend_container p-2 rounded">
+          <div className="friend_info">
+            ⚫&nbsp;{username}
+          </div>
+          <div className="friend_menu">
+            <FontAwesomeIcon className="remove_icon" size="1x" icon={faUserTimes} onClick={() => this.remove_friend(id)} />
+            <span style={{ paddingRight: "5px" }}>{this.timeSince(last_seen)}</span>
+          </div>
+        </div>
       );
     }
+  }
+}
 
+export class FriendsContainer extends React.Component<{ friends: FriendsProps[], update_friends: Function }> {
+  public render(): JSX.Element {
+    return (
+      <>
+        {this.props.friends.filter((friend) => { return friend.is_online }).map((friend) => (
+          <Row key={friend.id}>
+            <Col className="d-flex justify-content-start pb-3">
+              <Friends friends={friend} update_friends={this.props.update_friends} />
+            </Col>
+          </Row>
+        ))}
+        {this.props.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
+          <Row key={friend.id}>
+            <Col className="d-flex justify-content-start pb-3">
+              <Friends friends={friend} update_friends={this.props.update_friends} />
+            </Col>
+          </Row>
+        ))}
+      </>
+    )
   }
 }

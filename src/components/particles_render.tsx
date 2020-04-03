@@ -18,7 +18,7 @@ export default class ParticlesRenderer extends React.Component {
                 }
               },
               color: {
-                value: '#ffffff'
+                value: '#282828'
               },
               shape: {
                 type: 'circle',
@@ -31,7 +31,7 @@ export default class ParticlesRenderer extends React.Component {
                 }
               },
               opacity: {
-                value: 0.4,
+                value: 0.8,
                 random: false,
                 anim: {
                   enable: false,

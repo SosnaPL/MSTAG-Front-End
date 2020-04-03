@@ -5,61 +5,55 @@ const path = require("path");
 module.exports = {
   mode: process.env.NODE_ENV ? "development" : "production",
   entry: {
-    index: "./src/index.tsx"
+    index: "./src/index.tsx",
   },
   output: {
     filename: "[name]-[hash:8].bundle.js",
     chunkFilename: "[name]-[hash:8].chunk.js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "dist"),
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"]
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   module: {
     rules: [
       {
         test: /\.ts(x?)$/,
         exclude: /node_modules/,
-        loader: "ts-loader"
+        loader: "ts-loader",
       },
       {
         test: /\.(s*)css$/,
-        use: ["style-loader", "css-loader", "sass-loader"]
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
-      // {
-      //   test: /\.(png|jpe?g|gif)$/i,
-      //   use: [{
-      //     loader: 'url-loader',
-      //     options: {
-      //       limit: 8192,
-      //     },
-      //   }, ],
-      // },
       {
         test: /\.(png|jpe?g|gif)$/i,
-        loader: "file-loader"
+        loader: "file-loader",
+        /*options: {
+          name: "images/[name].[ext]",
+        },*/
       },
       {
         enforce: "pre",
         test: /\.js$/,
-        loader: "source-map-loader"
-      }
-    ]
+        loader: "source-map-loader",
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
       inject: true,
-      favicon: "src/logo/favicon.ico"
+      favicon: "src/logo/favicon.ico",
     }),
-    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/])
+    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/]),
   ],
   optimization: {
     usedExports: true,
     runtimeChunk: {
-      name: entrypoint => `runtime~${entrypoint.name}`
-    }
-  }
+      name: (entrypoint) => `runtime~${entrypoint.name}`,
+    },
+  },
 };
 
 if (process.env.NODE_ENV === "development") {
@@ -68,7 +62,7 @@ if (process.env.NODE_ENV === "development") {
     output: {
       filename: "[name].bundle.js",
       chunkFilename: "[name].chunk.js",
-      path: path.resolve(__dirname, "dist")
+      path: path.resolve(__dirname, "dist"),
     },
     devServer: {
       contentBase: path.join(__dirname, "dist"),
@@ -80,9 +74,9 @@ if (process.env.NODE_ENV === "development") {
         "Access-Control-Allow-Methods":
           "GET, POST, PUT, DELETE, PATCH, OPTIONS",
         "Access-Control-Allow-Headers":
-          "X-Requested-With, content-type, Authorization"
-      }
-    }
+          "X-Requested-With, content-type, Authorization",
+      },
+    },
   };
   module.exports = { ...module.exports, ...dev };
 }

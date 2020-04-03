@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Quicksand|Sigmar+One&display=swap");
 body {
   font-family: "Quicksand", sans-serif;
-  background-color: #111018;
+  background-image: url("../public/tank-bg.jpg");
 }
 
 ::-webkit-scrollbar {
@@ -42,11 +42,13 @@ body {
 }
 
 .content_container {
-  background: rgba(23, 28, 34, 0.8);
+  background-color: rgba(27, 21, 21, 0.5);
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
   color: white;
   height: 90%;
-  width: 66%;
-  max-width: 66%;
+  width: 75%;
+  max-width: 75%;
   max-height: 90%;
   transform: translate(-50%, -50%);
   position: absolute;
@@ -62,6 +64,8 @@ body {
   margin: 10px;
   text-decoration: none;
   color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .btn:focus {
@@ -69,40 +73,39 @@ body {
   box-shadow: none;
 }
 
-.chat,
-.nick,
-.clan,
-.card,
-.party_member {
-  background-color: rgba(33, 36, 61, 0.6);
-}
-
-.party_container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
 .friend_container {
   width: 100%;
   max-width: 100%;
   display: flex;
   flex-direction: row;
+  background-color: rgba(27, 21, 21, 0.65);
 }
 
-.invite_icon,
+.friend_info {
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  width: 75%;
+}
+
+.friend_menu {
+  width: 25%;
+  height: auto;
+  align-items: center;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .kick_icon {
   position: absolute;
-  right: 0;
-  top: 1%;
+  right: 1%;
+  top: 0;
   transition: ease-in 0.3s;
   cursor: pointer;
 }
-
+.invite_icon,
 .remove_icon {
-  position: absolute;
-  right: 0;
-  bottom: 1%;
+  margin-right: 5px;
   transition: ease-in 0.3s;
   cursor: pointer;
 }
@@ -116,12 +119,6 @@ svg:hover {
   margin: 0;
 }
 
-.friend_status {
-  padding-right: 0px;
-  width: 100%;
-  position: relative;
-}
-
 .invite_button {
   width: 50px;
   height: 10px;
@@ -130,14 +127,26 @@ svg:hover {
   justify-content: center;
 }
 
+.party_member {
+  position: relative;
+  margin-bottom: 10px;
+  font-size: 20px;
+  background-color: rgba(27, 21, 21, 0.65);
+}
+
 .nick,
 .clan {
+  position: relative;
   margin-bottom: 10px;
+  font-size: 20px;
+  background-image: url("../public/military.png");
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .klamie {
   width: 100%;
   height: 100%;
+  background-image: url("../public/bgg.png");
 }
 
 .lobby_container {
@@ -153,7 +162,7 @@ svg:hover {
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 30%;
+  width: 20%;
   max-height: 100%;
   box-sizing: border-box;
 }
@@ -189,6 +198,7 @@ svg:hover {
 }
 
 .chat {
+  background-color: rgba(27, 21, 21, 0.65);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -196,15 +206,17 @@ svg:hover {
   height: 80%;
   max-height: 80%;
   box-sizing: border-box;
+  border: 3px solid black;
 }
 
 .chat_messages {
   display: flex;
   flex-direction: column;
   position: relative;
+  box-sizing: border-box;
   width: 100%;
-  height: 95%;
-  max-height: 95%;
+  height: 93%;
+  max-height: 93%;
   padding: 10px;
 }
 
@@ -212,48 +224,52 @@ svg:hover {
   display: flex;
   flex-direction: row;
   position: relative;
+  overflow-x: hidden;
 }
 
 .message_name {
-  width: 30%;
+  width: 40%;
   padding-right: 10px;
   text-align: right;
   font-size: 15px;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .message_text {
-  width: 70%;
-  word-break: break-all;
+  width: 60%;
+  word-break: break-word;
   font-size: 15px;
   padding-left: 10px;
 }
 
-input[type="text"] {
+.input_holder {
+  height: auto;
+  width: 100%;
+  height: 7%;
+  padding: 5px;
+}
+
+.input_holder > input[type="text"] {
+  border: 2px solid black;
   color: black;
-  border-top-style: none;
-  border-right-style: none;
-  border-left-style: none;
-  border-bottom-style: none;
+  padding-left: 10px;
+  height: 100%;
+  width: 100%;
   border-radius: 0.25rem !important;
+  background-color: rgba(27, 21, 21, 0.6);
+  color: white;
+  position: relative;
 }
 
 input[type="text"]:focus {
   outline: none !important;
 }
 
-.input_holder {
-  display: flex;
-  height: auto;
-  width: 100%;
-  flex-direction: row;
-}
-
 .middle {
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 50%;
+  width: 60%;
   max-height: 100%;
   box-sizing: border-box;
 }
@@ -294,6 +310,8 @@ input[type="text"]:focus {
   width: 100%;
   border-radius: 0%;
   border: none;
+  background-color: rgba(27, 21, 21, 0.65);
+  padding: 5px;
 }
 
 .user_info {

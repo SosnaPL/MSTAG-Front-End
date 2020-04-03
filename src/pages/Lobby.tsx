@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Image, Row, Col } from 'react-bootstrap';
+import { Button, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL, get, CurrentUser } from '../components/constants';
+import { get, CurrentUser, get_suspense } from '../components/constants';
 import Notifications from '../components/notification_container';
-import Friends from '../components/friends';
+import { FriendsContainer } from '../components/friends';
 import Party from '../components/party';
 import Chat from '../components/chat';
 import InviteFriend from '../components/invite_friend';
@@ -20,9 +20,13 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     party_leader: null
   }
 
+  presence_ws = null;
+
   constructor(props) {
     super(props)
     this.updateFriendOnline = this.updateFriendOnline.bind(this)
+    this.fetch_player_profile()
+    console.log("constructor called")
   }
 
   updateFriends() {
@@ -30,6 +34,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     get("/users/profile/friends/")
       .then((res) => {
         this.setState({ friends: res.data })
+        console.log(this.state.friends)
       })
       .catch((e) => {
         console.log(e.data);
@@ -47,55 +52,38 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   logOut = () => {
+    this.presence_ws.close();
     localStorage.removeItem("token")
-    this.props.history.push("/")
+    window.location.reload();
   }
 
   fetch_player_profile() {
-    get("/team")
-      .then((res) => {
-        this.setState({ party: res.data.members, party_leader: res.data.leader })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    get("/users/profile/friends/")
-      .then((res) => {
-        this.setState({ friends: res.data })
-      })
-      .catch((e) => {
-        console.log(e.data);
-      })
-    fetch(API_URL + "/users/profile/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
-      .then(response => {
-        response.json().then(json => {
-          this.setState({
-            nick: json.username,
-            clan: json.player.clan ? json.player.clan.name : "No clan",
-            avatar: json.player.avatar ? json.player.avatar : "src/public/avatar.jpg",
-            id: json.player.id
-          })
-
-          CurrentUser.username = json.username;
-        });
-      });
-  }
-
-  play = () => {
-    get("/game/request/")
-      .then((res) => {
-        let ws = new WebSocket(res.data)
-        ws.onopen = () => {
-          console.log("connected")
-        }
-      })
-      .catch(() => {
-
-      })
+    console.log("fetch start")
+    const team = get_suspense("/team/")
+    const friends = get_suspense("/users/profile/friends/");
+    const profile = get_suspense("/users/profile/");
+    //const error = get_suspense("/error/");
+    console.log("fetch end")
+    this.state = {
+      party: team.members,
+      party_leader: team.leader,
+      friends: friends,
+      nick: profile.username,
+      clan: profile.clan ? profile.clan.name : "No clan",
+      avatar: profile.avatar ? profile.avatar : "src/public/avatar.jpg",
+      id: profile.id
+    }
+    CurrentUser.username = profile.username
+    CurrentUser.player_id = profile.id;
+    this.presence_ws = new WebSocket("ws://25.64.141.174:8769");
+    this.presence_ws.onopen = () => {
+      this.presence_ws.send(JSON.stringify(localStorage.getItem("token")));
+    };
   }
 
   _play = () => {
-    this.props.history.push("/game")
+    get("/test_notif/").then(() => { });
+    //this.props.history.push("/game")
   }
 
   updateFriendOnline = (friend_id, new_status) => {
@@ -110,20 +98,9 @@ class Lobby extends React.Component<RouteComponentProps, any> {
     this.setState({ friends: friends });
   }
 
-  componentDidMount() {
-    this.fetch_player_profile();
-  }
-
   public render(): JSX.Element {
-    if (!this.state.nick) {
-      return (
-        <div className="d-flex justify-content-center">
-          <h2>Logging in...</h2>
-        </div>
-      )
-    }
     return (
-      <div className="klamie">
+      <div className="p-3 klamie rounded">
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
@@ -135,7 +112,13 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           </div>
           <div className="middle">
             <div className="notifications">
-              <Notifications set_party={this.set_party.bind(this)} update_friends={this.updateFriends.bind(this)} player_id={this.state.id} update_friend={this.updateFriendOnline.bind(this)} />
+              <Notifications
+                begin_game={this._play.bind(this)}
+                set_party={this.set_party.bind(this)}
+                update_friends={this.updateFriends.bind(this)}
+                player_id={this.state.id}
+                update_friend={this.updateFriendOnline.bind(this)}
+              />
             </div>
           </div>
           <div className="right">
@@ -147,7 +130,7 @@ class Lobby extends React.Component<RouteComponentProps, any> {
                 {this.state.clan}
               </div>
               <div className="d-flex justify-content-center mb-2">
-                <Button variant="outline-dark" size="sm" onClick={this.logOut}>
+                <Button variant="dark" size="sm" onClick={this.logOut}>
                   Log Out!
                 </Button>
               </div>
@@ -161,27 +144,14 @@ class Lobby extends React.Component<RouteComponentProps, any> {
               />
             </div>
             <h2 className="d-flex justify-content-center">Friends:</h2>
+            <InviteFriend nick={this.state.nick} />
             <div className="lobby_friends">
-              {this.state.friends.filter((friend) => { return friend.is_online }).map((friend) => (
-                <Row key={friend.id}>
-                  <Col className="d-flex justify-content-start pb-3">
-                    <Friends friends={friend} update_friends={this.updateFriends.bind(this)} />
-                  </Col>
-                </Row>
-              ))}
-              {this.state.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
-                <Row key={friend.id}>
-                  <Col className="d-flex justify-content-start pb-3">
-                    <Friends friends={friend} update_friends={this.updateFriends.bind(this)} />
-                  </Col>
-                </Row>
-              ))}
-              <InviteFriend />
+              <FriendsContainer friends={this.state.friends} update_friends={this.updateFriends.bind(this)} />
             </div>
           </div>
         </div>
         <div className="bottom">
-          <Button variant="outline-dark" size="lg" onClick={this._play}>
+          <Button variant="dark" size="lg" onClick={this._play}>
             Play!
           </Button>
         </div>

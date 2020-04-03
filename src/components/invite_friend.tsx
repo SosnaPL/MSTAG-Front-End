@@ -2,7 +2,7 @@ import React from 'react';
 import { get } from '../components/constants';
 import { Button } from 'react-bootstrap';
 
-export default class InviteFriend extends React.Component {
+export default class InviteFriend extends React.Component<{ nick: string }> {
 
   state = {
     modal_visiblity: "none",
@@ -11,7 +11,7 @@ export default class InviteFriend extends React.Component {
     typingTimer: null,
     typingTimeout: 500,
     usernameInputRef: null,
-    invite_button_disabled: true
+    invite_button_disabled: true,
   }
 
   constructor(props) {
@@ -29,16 +29,24 @@ export default class InviteFriend extends React.Component {
     }
   }
 
-  checkUserExists = (name) => {
-    get("/users/check_exists/" + name)
-      .then((response) => {
-        this.setState({
-          user_exists: response.data.exists, id: response.data.exists ? response.data.id : null, invite_button_disabled: !response.data.exists
-        })
-      })
-      .catch(() => {
+  handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !this.state.invite_button_disabled) {
+      this.sendInvite()
+    }
+  }
 
-      });
+  checkUserExists = (name) => {
+    if (name != this.props.nick) {
+      get("/users/check_exists/" + name)
+        .then((response) => {
+          this.setState({
+            user_exists: response.data.exists, id: response.data.exists ? response.data.id : null, invite_button_disabled: !response.data.exists
+          })
+        })
+        .catch((e) => {
+          console.log(e)
+        });
+    }
   }
 
   showModal = () => {
@@ -59,6 +67,7 @@ export default class InviteFriend extends React.Component {
     if (!this.state.id) {
       return;
     }
+    console.log("send invite")
     get("/users/profile/friends/add/" + this.state.id.toString())
       .then(() => {
         this.hideModal();
@@ -72,7 +81,7 @@ export default class InviteFriend extends React.Component {
     return (
       <>
         <div className="d-flex justify-content-center">
-          <Button variant="outline-dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
+          <Button variant="dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
         </div>
         <div className="modal_add_friends_container" style={{ display: this.state.modal_visiblity }}>
           <div className="modal_add_friends">
@@ -80,7 +89,7 @@ export default class InviteFriend extends React.Component {
               &times;
             </div>
             <div>
-              Username: <input ref={this.state.usernameInputRef} type="text" spellCheck="false" onChange={this.onChange.bind(this)} />
+              Username: <input ref={this.state.usernameInputRef} type="text" spellCheck="false" onChange={this.onChange.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} />
             </div>
             <div>
               {this.state.user_exists ? "✔️" : "❌"}

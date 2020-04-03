@@ -7,7 +7,7 @@ import { API_URL } from '../components/constants'
 class Main extends React.Component<RouteComponentProps, any> {
 
   state = {
-    dupa: false
+    loading: true
   }
 
   is_logged_in() {
@@ -19,11 +19,13 @@ class Main extends React.Component<RouteComponentProps, any> {
       })
         .then((res) => {
           if (!res.ok) {
+            console.log("bad token")
             localStorage.removeItem("token");
-            this.setState({ dupa: true })
+            this.setState({ loading: false })
             return
           }
           else {
+            console.log("lobby")
             this.props.history.push("/lobby")
           }
         })
@@ -31,7 +33,8 @@ class Main extends React.Component<RouteComponentProps, any> {
         })
     }
     else {
-      this.setState({ dupa: true })
+      this.setState({ loading: false })
+      console.log("no token")
     }
   }
 
@@ -40,7 +43,7 @@ class Main extends React.Component<RouteComponentProps, any> {
   }
 
   public render(): JSX.Element {
-    if (!this.state.dupa) {
+    if (this.state.loading) {
       return (
         <div className="d-flex justify-content-center">
           <h2>Loading...</h2>

@@ -7,14 +7,22 @@ export default class Chat extends React.Component {
 
   state = {
     messages: [],
-    chat_server: null
+    chat_server: null,
+    error: "",
+    connecting: true,
   }
+
+  ws_unmounted = false;
 
   ws_server = () => {
     get("/server_config/")
       .then((res) => {
+        this.setState({ connecting: true });
         let ws = new WebSocket(res.data.chat)
         this.setState({ chat_server: ws })
+        ws.onopen = () => {
+          this.setState({ connecting: false, error: "" })
+        }
         ws.onmessage = (e) => {
           let message = JSON.parse(e.data);
           if (this.state.messages.length && this.state.messages[this.state.messages.length - 1].name == message.name) {
@@ -25,6 +33,15 @@ export default class Chat extends React.Component {
           else {
             this.setState({ messages: [...this.state.messages, message] });
           }
+        }
+        ws.onclose = (_e) => {
+          if (!this.ws_unmounted) {
+            setTimeout(this.ws_server, 10000);
+          }
+        }
+        ws.onerror = (_e) => {
+          setTimeout(this.ws_server, 10000);
+          this.setState({ connecting: false, error: "Connection failed :(" })
         }
       })
       .catch((err) => {
@@ -68,7 +85,10 @@ export default class Chat extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.chat_server.close();
+    this.ws_unmounted = true;
+    if (this.state.chat_server) {
+      this.state.chat_server.close();
+    }
   }
 
   componentDidMount() {
@@ -76,6 +96,36 @@ export default class Chat extends React.Component {
   }
 
   public render(): JSX.Element {
+    if (this.state.connecting) {
+      return (
+        <>
+          <p>Connecting...</p>
+          <div className="input_holder" style={{ position: "absolute", bottom: "0px", left: "0px" }}>
+            <input
+              disabled
+              type="text"
+              placeholder="Send message!"
+              onKeyDown={this.handleKeyDown.bind(this)}
+            />
+          </div>
+        </>
+      )
+    }
+    if (this.state.error) {
+      return (
+        <>
+          <p>{this.state.error}</p>
+          <div className="input_holder" style={{ position: "absolute", bottom: "0px", left: "0px" }}>
+            <input
+              disabled
+              type="text"
+              placeholder="Send message!"
+              onKeyDown={this.handleKeyDown.bind(this)}
+            />
+          </div>
+        </>
+      )
+    }
     return (
       <>
         <div className="chat_messages">
@@ -108,12 +158,7 @@ export default class Chat extends React.Component {
         <div className="input_holder">
           <input
             type="text"
-            style={{
-              left: "0",
-              bottom: "0",
-              position: "absolute",
-              width: "100%"
-            }}
+            placeholder="Send message!"
             onKeyDown={this.handleKeyDown.bind(this)}
           />
         </div>

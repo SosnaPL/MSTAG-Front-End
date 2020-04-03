@@ -1,36 +1,36 @@
 import React from 'react';
-import { API_URL } from './constants';
-import { get } from '../components/constants'
-//import { Row } from 'react-bootstrap';
-import Notification, { TeamInviteNotification, FriendInviteNotification } from './notification'
-import axios from 'axios';
+import { get, GameServer } from '../components/constants';
+import Notification, { TeamInviteNotification, FriendInviteNotification } from './notification';
 
-export default class Notifications extends React.Component<{ set_party: Function, update_friends: Function, player_id: number, update_friend: Function }, { notifications: any[], notification_socket: WebSocket }> {
+export default class Notifications extends React.Component<{ set_party: Function, update_friends: Function, player_id: number, update_friend: Function, begin_game: Function }, { notifications: any[], notification_socket: WebSocket, error: String }> {
   constructor(props) {
     super(props)
     this.state = {
       notifications: [],
       notification_socket: null,
+      error: "",
     }
     this.delete = this.delete.bind(this);
   }
+
+  ws_unmounted = false;
 
   delete(id) {
     this.setState({
       notifications: this.state.notifications.filter(el => el.props.time != id)
     });
   }
-
   update_friend(id, status) {
     this.props.update_friend(id, status)
   }
 
   ws_server = () => {
-    axios.get(API_URL + "/server_config/", { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    get("/server_config/")
       .then((res) => {
         let ws = new WebSocket(res.data.notification)
         ws.onopen = () => {
-          ws.send(JSON.stringify([localStorage.getItem("token"), this.props.player_id]))
+          ws.send(JSON.stringify(localStorage.getItem("token")))
+
           console.log("connected")
           get('/notification/retrieve/')
             .then(() => {
@@ -39,6 +39,7 @@ export default class Notifications extends React.Component<{ set_party: Function
             .catch(() => {
 
             })
+          this.setState({ error: "" });
         }
         ws.onmessage = (e) => {
           let data = JSON.parse(e.data);
@@ -96,9 +97,20 @@ export default class Notifications extends React.Component<{ set_party: Function
           else if (data.type == "friend invite declined") {
             text = data.username + " has declined your friend request.";
           }
+          else if (data.type == "already in friends") {
+            text = data.username + " is already in your friend list!"
+          }
+          else if (data.type == "already in friend invites") {
+            text = "You have already invited " + data.username + " to your friends!"
+          }
           else if (data.type == "removed from friends") {
             text = data.username + " has removed you from their friend list. :(";
             this.props.update_friends();
+          }
+          else if (data.type == "starting game") {
+            show = false;
+            GameServer.address = data.address;
+            this.props.begin_game();
           }
 
           if (!show) {
@@ -118,11 +130,14 @@ export default class Notifications extends React.Component<{ set_party: Function
 
         }
         ws.onclose = (_e) => {
-          if (localStorage.getItem("token")) {
+          if (!this.ws_unmounted) {
             setTimeout(this.ws_server, 10000);
           }
         }
-        this.setState({ notification_socket: ws });
+        ws.onerror = (_e) => {
+          setTimeout(this.ws_server, 10000);
+          this.setState({ error: "Can't connect to notification service." })
+        }
       })
       .catch((err) => {
         console.log(err)
@@ -130,7 +145,10 @@ export default class Notifications extends React.Component<{ set_party: Function
   }
 
   componentWillUnmount() {
-    this.state.notification_socket.close();
+    this.ws_unmounted = true
+    if (this.state.notification_socket) {
+      this.state.notification_socket.close();
+    }
   }
 
   componentDidMount() {
@@ -138,6 +156,11 @@ export default class Notifications extends React.Component<{ set_party: Function
   }
 
   public render(): JSX.Element {
+    if (this.state.error) {
+      return (
+        <h1>{this.state.error}</h1>
+      )
+    }
     return (
       <>
         {

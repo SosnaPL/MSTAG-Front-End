@@ -2,6 +2,7 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import ParticlesRenderer from './components/particles_render';
+//import Bg from "./public/tank-bg.jpg";
 
 const Main = React.lazy(() => import('./pages/Main'));
 const Register = React.lazy(() => import('./pages/Register'))
@@ -14,7 +15,7 @@ export default class App extends React.Component {
     return (
       <Container className="app_container">
         <ParticlesRenderer />
-        <Container className="p-3 rounded content_container">
+        <div className="rounded content_container">
           <MemoryRouter>
             <React.Suspense
               fallback={(
@@ -32,7 +33,7 @@ export default class App extends React.Component {
               </Switch>
             </React.Suspense>
           </MemoryRouter>
-        </Container>
+        </div>
       </Container>
     );
   }

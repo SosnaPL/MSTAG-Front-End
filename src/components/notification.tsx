@@ -2,7 +2,6 @@ import React from 'react';
 import { get } from './constants';
 import { Button, Row, Col, Card } from 'react-bootstrap';
 
-
 interface NotificationsProps {
   id?: number,
   text: string,
