@@ -2,7 +2,7 @@ import React from 'react';
 import { get } from './constants';
 import { Button, Row, Col, Card } from 'react-bootstrap';
 
-interface NotificationsProps {
+interface NotificationProps {
   id?: number,
   text: string,
   delete: Function,
@@ -10,7 +10,7 @@ interface NotificationsProps {
   time: number,
 }
 
-export default class Notification extends React.Component<NotificationsProps> {
+export default class Notification extends React.Component<NotificationProps> {
   delete() {
     this.props.delete(this.props.time)
   }
@@ -21,7 +21,7 @@ export default class Notification extends React.Component<NotificationsProps> {
         <Col className="d-flex justify-content-start pb-3">
           <Card className="shadow rounded d-flex align-items-center">
             <Card.Title>{this.props.text}</Card.Title>
-            <Button onClick={this.delete.bind(this)}>
+            <Button variant="dark" onClick={this.delete.bind(this)}>
               Delete.
             </Button>
           </Card>
@@ -63,10 +63,10 @@ export class TeamInviteNotification extends Notification {
             <Card.Title>{this.props.text}</Card.Title>
             <Row>
               <Col>
-                <Button onClick={() => this.accept_invite(this.props.id)}>
+                <Button variant="dark" onClick={() => this.accept_invite(this.props.id)}>
                   Accept!
                 </Button>
-                <Button onClick={() => this.decline_invite(this.props.id)}>Decline.</Button>
+                <Button variant="dark" onClick={() => this.decline_invite(this.props.id)}>Decline.</Button>
               </Col>
             </Row>
           </Card>
@@ -108,10 +108,10 @@ export class FriendInviteNotification extends Notification {
             <Card.Title>{this.props.text}</Card.Title>
             <Row>
               <Col>
-                <Button onClick={() => this.accept_invite(this.props.id)}>
+                <Button variant="dark" onClick={() => this.accept_invite(this.props.id)}>
                   Accept!
                 </Button>
-                <Button onClick={() => this.decline_invite(this.props.id)}>Decline.</Button>
+                <Button variant="dark" onClick={() => this.decline_invite(this.props.id)}>Decline.</Button>
               </Col>
             </Row>
           </Card>

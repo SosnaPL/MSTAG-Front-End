@@ -2,12 +2,46 @@ import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL } from '../components/constants'
+import { API_URL } from '../components/constants';
 
-class Main extends React.Component<RouteComponentProps, any> {
+interface MainState {
+  loading: boolean;
+  error_type: string;
+}
 
-  state = {
-    loading: true
+class Main extends React.Component<RouteComponentProps, MainState> {
+
+  constructor(props: RouteComponentProps) {
+    super(props)
+    this.state = {
+      loading: true,
+      error_type: "",
+    }
+  }
+
+  presence_ws: WebSocket = null;
+
+  connect_presence() {
+    return new Promise((resolve, reject) => {
+      this.presence_ws = new WebSocket("ws://25.64.141.174:8769");
+      this.presence_ws.onopen = () => {
+        console.log("ONOPEN")
+        this.presence_ws.send(JSON.stringify(localStorage.getItem("token")));
+        console.log("SENT")
+      };
+      this.presence_ws.onmessage = (response) => {
+        const msg = JSON.parse(response.data)
+        if (msg.error) {
+          console.log("closepressence")
+          this.presence_ws.close();
+          reject(msg.error_type);
+        }
+        else {
+          console.log("connect pressence")
+          resolve();
+        }
+      }
+    })
   }
 
   is_logged_in() {
@@ -25,17 +59,31 @@ class Main extends React.Component<RouteComponentProps, any> {
             return
           }
           else {
-            console.log("lobby")
-            this.props.history.push("/lobby")
+            this.connect_presence().then(() => {
+              console.log("lobby")
+              this.props.history.push("/lobby")
+            }).catch((err) => {
+              this.setState({ error_type: err, loading: false })
+            })
+
           }
         })
         .catch(() => {
+          console.log("timeout")
+          localStorage.removeItem("token");
+          this.setState({ loading: false })
         })
     }
     else {
       this.setState({ loading: false })
       console.log("no token")
     }
+  }
+
+  removeToken = () => {
+    console.log()
+    localStorage.removeItem("token");
+    this.props.history.push("/login");
   }
 
   componentDidMount() {
@@ -47,6 +95,14 @@ class Main extends React.Component<RouteComponentProps, any> {
       return (
         <div className="d-flex justify-content-center">
           <h2>Loading...</h2>
+        </div>
+      )
+    }
+    if (this.state.error_type) {
+      return (
+        <div className="d-flex justify-content-center flex-column">
+          <h2>{this.state.error_type}</h2>
+          <Button onClick={this.removeToken.bind(this)} variant="dark">Try again</Button>
         </div>
       )
     }

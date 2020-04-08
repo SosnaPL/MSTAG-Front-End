@@ -1,19 +1,64 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { get } from '../components/constants'
-import { API_URL } from '../components/constants';
+import { get } from './constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faUserTimes } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import ReactTooltip from 'react-tooltip';
+import FriendTooltip from './friend_tooltip'
 
-interface FriendsProps {
+
+export interface FriendsProps {
   id: number,
   username: string;
   last_seen: number;
   is_online: boolean;
 }
 
-export default class Friends extends React.Component<{ friends: FriendsProps, update_friends: Function }> {
+export default class FriendsContainer extends React.Component<{ friends: FriendsProps[] | null, update_friends: Function }> {
+  public render(): JSX.Element {
+    if (!this.props.friends) {
+      setTimeout(this.props.update_friends, 10000);
+      return (
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border" role="projects_load" />
+        </div>
+      )
+    }
+    if (this.props.friends.length < 1) {
+      return (
+        <>
+        </>
+      )
+    }
+    return (
+      <>
+        {this.props.friends.filter((friend) => { return friend.is_online }).map((friend) => (
+          <Row key={friend.id}>
+            <Col className="d-flex justify-content-start pb-3">
+              <Friends friends={friend} update_friends={this.props.update_friends} />
+            </Col>
+          </Row>
+        ))}
+        {this.props.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
+          <Row key={friend.id}>
+            <Col className="d-flex justify-content-start pb-3">
+              <Friends friends={friend} update_friends={this.props.update_friends} />
+            </Col>
+          </Row>
+        ))}
+      </>
+    )
+  }
+}
+
+class Friends extends React.Component<{ friends: FriendsProps, update_friends: Function }, { tooltip_friend_id: null | number }> {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      tooltip_friend_id: null
+    }
+  }
 
   timeSince(seconds: number) {
     let interval = Math.floor(seconds / 31536000);
@@ -43,7 +88,7 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
 
   invite_friend = (id: number) => {
     console.log("sending invite");
-    axios.get(API_URL + "/team/invite/" + id.toString(), { headers: { Authorization: "Token " + localStorage.getItem("token") } })
+    get("/team/invite/" + id.toString() + "/")
       .then(() => {
       })
       .catch((err) => {
@@ -68,7 +113,14 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
 
     if (is_online) {
       return (
-        <div className="friend_container p-2 rounded">
+        <div data-tip data-for={id.toString()} className="friend_container p-2 rounded">
+          <ReactTooltip id={id.toString()}/* delayHide={100} clickable={true} */ className="opaque" place="top" type="dark" effect="solid" getContent={() => {
+            return (
+              <FriendTooltip id={this.state.tooltip_friend_id} />
+            )
+          }} afterShow={() => {
+            this.setState({ tooltip_friend_id: id })
+          }} />
           <div className="friend_info">
             🟢&nbsp;{username}
           </div>
@@ -76,7 +128,7 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
             <FontAwesomeIcon className="remove_icon" size="1x" icon={faUserTimes} onClick={() => this.remove_friend(id)} />
             <FontAwesomeIcon className="invite_icon" size="1x" icon={faPlusCircle} onClick={() => this.invite_friend(id)} />
           </div>
-        </div>
+        </div >
       );
     }
     else {
@@ -95,25 +147,4 @@ export default class Friends extends React.Component<{ friends: FriendsProps, up
   }
 }
 
-export class FriendsContainer extends React.Component<{ friends: FriendsProps[], update_friends: Function }> {
-  public render(): JSX.Element {
-    return (
-      <>
-        {this.props.friends.filter((friend) => { return friend.is_online }).map((friend) => (
-          <Row key={friend.id}>
-            <Col className="d-flex justify-content-start pb-3">
-              <Friends friends={friend} update_friends={this.props.update_friends} />
-            </Col>
-          </Row>
-        ))}
-        {this.props.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
-          <Row key={friend.id}>
-            <Col className="d-flex justify-content-start pb-3">
-              <Friends friends={friend} update_friends={this.props.update_friends} />
-            </Col>
-          </Row>
-        ))}
-      </>
-    )
-  }
-}
+

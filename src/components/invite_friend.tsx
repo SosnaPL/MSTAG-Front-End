@@ -1,52 +1,65 @@
-import React from 'react';
+import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { get } from '../components/constants';
 import { Button } from 'react-bootstrap';
 
-export default class InviteFriend extends React.Component<{ nick: string }> {
+interface InviteFriendState {
+  modal_visiblity: string,
+  user_exists: boolean,
+  id: number | null,
+  usernameInputRef: React.RefObject<HTMLInputElement> | null,
+  invite_button_disabled: boolean,
+}
 
-  state = {
-    modal_visiblity: "none",
-    user_exists: false,
-    id: null,
-    typingTimer: null,
-    typingTimeout: 500,
-    usernameInputRef: null,
-    invite_button_disabled: true,
-  }
+interface InviteFriendProps {
+  nick: string,
+  button_status: boolean
+}
 
-  constructor(props) {
+export default class InviteFriend extends React.Component<InviteFriendProps, InviteFriendState> {
+
+  constructor(props: InviteFriendProps) {
     super(props);
-    this.state.usernameInputRef = React.createRef();
-  }
-
-  onChange = (e) => {
-    let name = e.target.value.toString();
-    clearTimeout(this.state.typingTimer);
-    if (name) {
-      this.state.typingTimer = setTimeout(() => {
-        this.checkUserExists(name);
-      }, this.state.typingTimeout);
+    this.state = {
+      modal_visiblity: "none",
+      user_exists: false,
+      id: null,
+      usernameInputRef: React.createRef(),
+      invite_button_disabled: true,
     }
   }
 
-  handleKeyDown = (e) => {
+  typingTimer: any;
+  typingTimeout: number = 500;
+
+  onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    let name = e.target.value.toString();
+    clearTimeout(this.typingTimer);
+    if (name && name != this.props.nick) {
+      this.typingTimer = setTimeout(() => {
+        this.checkUserExists(name);
+      }, this.typingTimeout);
+    }
+    else {
+      this.setState({ invite_button_disabled: true, user_exists: false })
+    }
+  }
+
+  handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !this.state.invite_button_disabled) {
       this.sendInvite()
     }
   }
 
-  checkUserExists = (name) => {
-    if (name != this.props.nick) {
-      get("/users/check_exists/" + name)
-        .then((response) => {
-          this.setState({
-            user_exists: response.data.exists, id: response.data.exists ? response.data.id : null, invite_button_disabled: !response.data.exists
-          })
+  checkUserExists = (name: string) => {
+    get("/users/check_exists/" + name)
+      .then((response) => {
+        this.setState({
+          user_exists: response.data.exists, id: response.data.exists ? response.data.id : null, invite_button_disabled: !response.data.exists
         })
-        .catch((e) => {
-          console.log(e)
-        });
-    }
+      })
+      .catch((e) => {
+        console.log(e)
+      });
   }
 
   showModal = () => {
@@ -68,7 +81,7 @@ export default class InviteFriend extends React.Component<{ nick: string }> {
       return;
     }
     console.log("send invite")
-    get("/users/profile/friends/add/" + this.state.id.toString())
+    get("/users/profile/friends/add/" + this.state.id.toString() + "/")
       .then(() => {
         this.hideModal();
       })
@@ -81,7 +94,7 @@ export default class InviteFriend extends React.Component<{ nick: string }> {
     return (
       <>
         <div className="d-flex justify-content-center">
-          <Button variant="dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
+          <Button disabled={this.props.button_status} variant="dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
         </div>
         <div className="modal_add_friends_container" style={{ display: this.state.modal_visiblity }}>
           <div className="modal_add_friends">

@@ -28,7 +28,7 @@ class Login extends React.Component<RouteComponentProps, any> {
       .then(response => {
         console.log("Logged in");
         localStorage.setItem("token", response.data.token);
-        this.props.history.push("/lobby")
+        this.props.history.push("/")
       })
       .catch(error => {
         console.log(error);

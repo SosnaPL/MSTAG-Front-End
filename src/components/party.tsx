@@ -2,11 +2,23 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { get } from '../components/constants'
+import { get } from '../components/constants';
 
-export default class Party extends React.Component<{ party: any, leader: any, user_nick: string }, {}> {
+export interface PartyProps {
+  id: number;
+  username: string;
+  kills: number;
+  wins: number;
+  games: number;
+  clan: string | null;
+  avatar: string;
+  last_seen: number;
+}
 
-  kick_member(id) {
+
+export default class Party extends React.Component<{ party: PartyProps[] | undefined, leader: PartyProps | undefined, user_nick: string }> {
+
+  kick_member(id: number) {
     get("/team/kick/" + id.toString())
       .then(() => {
       })

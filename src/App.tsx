@@ -2,7 +2,6 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import ParticlesRenderer from './components/particles_render';
-//import Bg from "./public/tank-bg.jpg";
 
 const Main = React.lazy(() => import('./pages/Main'));
 const Register = React.lazy(() => import('./pages/Register'))

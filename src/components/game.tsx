@@ -119,40 +119,70 @@ let countdown: number = 0;
 let prepared_fire_x = 0;
 let prepared_fire_y = 0;
 
+let game_state = "GAME_STATE_PREGAME";
+let have_players = 0
+let need_players = 0
+
+function fixDpi() {
+  const dpi = window.devicePixelRatio;
+  let style = {
+    height() {
+      return +getComputedStyle(canvas).getPropertyValue('height').slice(0, -2);
+    },
+    width() {
+      return +getComputedStyle(canvas).getPropertyValue('width').slice(0, -2);
+    }
+  }
+  canvas.setAttribute('width', (style.width() * dpi).toString())
+  canvas.setAttribute('height', (style.height() * dpi).toString());
+  canvas.width = canvas.height * (canvas.clientWidth / canvas.clientHeight);
+  //canvas.retinaResolutionEnabled = false;
+}
+
 function game_loop(now: number) {
+  fixDpi();
   const delta = (now - last_step) / 1000;
   let ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let proj of projectiles) {
-    proj.update(delta);
-    proj.draw(ctx);
+  if (game_state == "GAME_STATE_PREGAME" && need_players != 0) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let deffont = ctx.font;
+    ctx.font = "30px Comic Sans MS";
+    ctx.fillText("Players: " + have_players.toString() + "/" + need_players.toString(), 250, 250);
+    ctx.font = deffont;
   }
-  if (aiming) {
-    prepared_fire_x = 0;
-    prepared_fire_y = 0;
-    let [final_x, final_y] = get_aim_loc();
-    ctx.beginPath();
-    ctx.moveTo(my_tank.x, my_tank.y);
-    ctx.lineTo(final_x, final_y);
-    ctx.stroke();
+  else if (game_state == "GAME_STATE_PLAYING") {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let proj of projectiles) {
+      proj.update(delta);
+      proj.draw(ctx);
+    }
+    if (aiming) {
+      prepared_fire_x = 0;
+      prepared_fire_y = 0;
+      let [final_x, final_y] = get_aim_loc();
+      ctx.beginPath();
+      ctx.moveTo(my_tank.x, my_tank.y);
+      ctx.lineTo(final_x, final_y);
+      ctx.stroke();
+    }
+    if (prepared_fire_x) {
+      ctx.beginPath();
+      ctx.setLineDash([5, 5])
+      ctx.moveTo(my_tank.x, my_tank.y);
+      ctx.lineTo(prepared_fire_x, prepared_fire_y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    for (let tank of tanks.values()) {
+      tank.draw(ctx);
+    }
+    ctx.fillStyle = "black"
+    ctx.textAlign = "center";
+    let deffont = ctx.font;
+    ctx.font = "30px Comic Sans MS";
+    ctx.fillText(countdown.toString(), 250, 30);
+    ctx.font = deffont;
   }
-  if (prepared_fire_x) {
-    ctx.beginPath();
-    ctx.setLineDash([5, 5])
-    ctx.moveTo(my_tank.x, my_tank.y);
-    ctx.lineTo(prepared_fire_x, prepared_fire_y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-  for (let tank of tanks.values()) {
-    tank.draw(ctx);
-  }
-  ctx.fillStyle = "black"
-  ctx.textAlign = "center";
-  let deffont = ctx.font;
-  ctx.font = "30px Comic Sans MS";
-  ctx.fillText(countdown.toString(), 250, 30);
-  ctx.font = deffont;
   last_step = now;
   requestAnimationFrame(game_loop);
 }
@@ -184,7 +214,8 @@ function connect(addr) {
   game_ws = new WebSocket(addr);
   game_ws.onopen = function (_event) {
     console.log(CurrentUser.username);
-    game_ws.send(localStorage.getItem("token"))
+    game_ws.send(JSON.stringify(CurrentUser.token))
+    requestAnimationFrame(game_loop);
   };
   game_ws.onmessage = function (msg) {
     console.log(msg.data);
@@ -195,7 +226,6 @@ function connect(addr) {
       my_tank.username = data.username
       my_tank.image = recolor_image(tank_image, my_tank.color);
       tanks.set(my_tank.username, my_tank);
-      requestAnimationFrame(game_loop);
     }
     else if (data.type == "enemy tank") {
       let asshole = new Tank(data.x, data.y);
@@ -211,6 +241,13 @@ function connect(addr) {
     }
     else if (data.type == "countdown") {
       countdown = data.countdown;
+    }
+    else if (data.type == "event_player_count") {
+      have_players = data.have
+      need_players = data.need
+    }
+    else if (data.type == "event_game_start") {
+      game_state = "GAME_STATE_PLAYING"
     }
   }
   game_ws.onclose = function (ev) {
@@ -272,7 +309,7 @@ export default class Game extends React.Component {
   public render(): JSX.Element {
     return (
       <div className="game_container">
-        <canvas ref="game" width="500px" height="500px"></canvas>
+        <canvas ref="game"></canvas>
       </div>
     );
   }

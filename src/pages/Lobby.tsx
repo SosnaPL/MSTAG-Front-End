@@ -2,48 +2,53 @@ import React from 'react';
 import { Button, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { get, CurrentUser, get_suspense } from '../components/constants';
-import Notifications from '../components/notification_container';
-import { FriendsContainer } from '../components/friends';
-import Party from '../components/party';
+import NotificationsContainer from '../components/notification_container';
+import FriendsContainer, { FriendsProps } from '../components/friends';
+import Party, { PartyProps } from '../components/party';
 import Chat from '../components/chat';
 import InviteFriend from '../components/invite_friend';
 
-class Lobby extends React.Component<RouteComponentProps, any> {
+interface LobbyState {
+  id: number;
+  nick: string;
+  clan: string;
+  avatar: string;
+  friends: FriendsProps[] | null;
+  party: PartyProps[] | undefined;
+  party_leader: PartyProps | undefined;
+  play_button_enabled: boolean;
+  in_game: boolean;
+}
 
-  state = {
-    id: 0,
-    nick: "",
-    clan: "",
-    avatar: "",
-    friends: [],
-    party: [],
-    party_leader: null
-  }
+class Lobby extends React.Component<RouteComponentProps, LobbyState> {
 
-  presence_ws = null;
-
-  constructor(props) {
+  constructor(props: RouteComponentProps) {
     super(props)
     this.updateFriendOnline = this.updateFriendOnline.bind(this)
+    this.updateFriends = this.updateFriends.bind(this)
     this.fetch_player_profile()
-    console.log("constructor called")
+    console.log("constructor meme")
+  }
+
+  updatePlayButton(button_state: boolean) {
+    this.setState({ play_button_enabled: button_state })
   }
 
   updateFriends() {
-    console.log("update_friends")
     get("/users/profile/friends/")
       .then((res) => {
         this.setState({ friends: res.data })
         console.log(this.state.friends)
       })
-      .catch((e) => {
-        console.log(e.data);
+      .catch(() => {
+        this.setState({ friends: null })
       })
   }
 
   set_party() {
     get("/team")
       .then((res) => {
+        this.updatePlayButton(!res.data.leader || res.data.leader.username == this.state.nick)
         this.setState({ party: res.data.members, party_leader: res.data.leader })
       })
       .catch((err) => {
@@ -52,50 +57,50 @@ class Lobby extends React.Component<RouteComponentProps, any> {
   }
 
   logOut = () => {
-    this.presence_ws.close();
     localStorage.removeItem("token")
     window.location.reload();
   }
 
   fetch_player_profile() {
-    console.log("fetch start")
+    CurrentUser.token = localStorage.getItem("token");
     const team = get_suspense("/team/")
     const friends = get_suspense("/users/profile/friends/");
     const profile = get_suspense("/users/profile/");
     //const error = get_suspense("/error/");
-    console.log("fetch end")
     this.state = {
-      party: team.members,
-      party_leader: team.leader,
-      friends: friends,
-      nick: profile.username,
-      clan: profile.clan ? profile.clan.name : "No clan",
-      avatar: profile.avatar ? profile.avatar : "src/public/avatar.jpg",
-      id: profile.id
+      party: team.response.members,
+      party_leader: team.response.leader,
+      friends: friends.ok ? friends.response : null,
+      nick: profile.response.username,
+      clan: profile.response.clan ? profile.response.clan.name : "No clan",
+      avatar: profile.response.avatar ? profile.response.avatar : "src/public/avatar.jpg",
+      id: profile.response.id,
+      play_button_enabled: true,
+      in_game: false,
     }
-    CurrentUser.username = profile.username
+    console.log(this.state)
+    CurrentUser.username = profile.username;
     CurrentUser.player_id = profile.id;
-    this.presence_ws = new WebSocket("ws://25.64.141.174:8769");
-    this.presence_ws.onopen = () => {
-      this.presence_ws.send(JSON.stringify(localStorage.getItem("token")));
-    };
   }
 
   _play = () => {
-    get("/test_notif/").then(() => { });
-    //this.props.history.push("/game")
+    this.setState({ in_game: true }, () => {
+      this.props.history.push("/game");
+    })
   }
 
-  updateFriendOnline = (friend_id, new_status) => {
-    let friends = this.state.friends;
-    for (let friend of friends) {
-      if (friend.id == friend_id) {
-        friend.is_online = new_status;
-        friend.last_seen = 1;
-        break;
+  updateFriendOnline = (friend_id: number, new_status: boolean) => {
+    if (this.state.friends) {
+      let friends = this.state.friends;
+      for (let friend of friends) {
+        if (friend.id == friend_id) {
+          friend.is_online = new_status;
+          friend.last_seen = 1;
+          break;
+        }
       }
+      this.setState({ friends: friends });
     }
-    this.setState({ friends: friends });
   }
 
   public render(): JSX.Element {
@@ -112,12 +117,13 @@ class Lobby extends React.Component<RouteComponentProps, any> {
           </div>
           <div className="middle">
             <div className="notifications">
-              <Notifications
+              <NotificationsContainer
                 begin_game={this._play.bind(this)}
                 set_party={this.set_party.bind(this)}
                 update_friends={this.updateFriends.bind(this)}
                 player_id={this.state.id}
                 update_friend={this.updateFriendOnline.bind(this)}
+                in_game={this.state.in_game}
               />
             </div>
           </div>
@@ -144,18 +150,21 @@ class Lobby extends React.Component<RouteComponentProps, any> {
               />
             </div>
             <h2 className="d-flex justify-content-center">Friends:</h2>
-            <InviteFriend nick={this.state.nick} />
+            <InviteFriend nick={this.state.nick} button_status={!this.state.friends} />
             <div className="lobby_friends">
-              <FriendsContainer friends={this.state.friends} update_friends={this.updateFriends.bind(this)} />
+              <FriendsContainer
+                friends={this.state.friends}
+                update_friends={this.updateFriends.bind(this)}
+              />
             </div>
           </div>
         </div>
         <div className="bottom">
-          <Button variant="dark" size="lg" onClick={this._play}>
+          <Button disabled={!this.state.play_button_enabled} variant="dark" size="lg" onClick={this._play}>
             Play!
           </Button>
         </div>
-      </div>
+      </div >
     );
   }
 }

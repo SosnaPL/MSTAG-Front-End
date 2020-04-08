@@ -1,9 +1,18 @@
 import React from 'react';
-import { get, GameServer } from '../components/constants';
+import { get, GameServer, CurrentUser } from '../components/constants';
 import Notification, { TeamInviteNotification, FriendInviteNotification } from './notification';
 
-export default class Notifications extends React.Component<{ set_party: Function, update_friends: Function, player_id: number, update_friend: Function, begin_game: Function }, { notifications: any[], notification_socket: WebSocket, error: String }> {
-  constructor(props) {
+interface NotificationsProps {
+  set_party: Function;
+  update_friends: Function;
+  player_id: number;
+  update_friend: Function;
+  in_game: boolean;
+  begin_game: Function;
+}
+
+export default class NotificationsContainer extends React.Component<NotificationsProps, { notifications: JSX.Element[], notification_socket: WebSocket, error: String }> {
+  constructor(props: NotificationsProps) {
     super(props)
     this.state = {
       notifications: [],
@@ -15,12 +24,12 @@ export default class Notifications extends React.Component<{ set_party: Function
 
   ws_unmounted = false;
 
-  delete(id) {
+  delete(id: number) {
     this.setState({
       notifications: this.state.notifications.filter(el => el.props.time != id)
     });
   }
-  update_friend(id, status) {
+  update_friend(id: number, status: boolean) {
     this.props.update_friend(id, status)
   }
 
@@ -29,7 +38,7 @@ export default class Notifications extends React.Component<{ set_party: Function
       .then((res) => {
         let ws = new WebSocket(res.data.notification)
         ws.onopen = () => {
-          ws.send(JSON.stringify(localStorage.getItem("token")))
+          ws.send(JSON.stringify(CurrentUser.token))
 
           console.log("connected")
           get('/notification/retrieve/')
@@ -42,6 +51,9 @@ export default class Notifications extends React.Component<{ set_party: Function
           this.setState({ error: "" });
         }
         ws.onmessage = (e) => {
+          if (this.props.in_game) {
+            return
+          }
           let data = JSON.parse(e.data);
           let NewNotif = Notification;
           let text = data.text || "DEFAULT TEXT";
@@ -124,13 +136,15 @@ export default class Notifications extends React.Component<{ set_party: Function
               friends_update={this.props.update_friends}
               time={Date.now()}
             />
+          let farts = this.state.notifications;
+          farts.push(notif_instance);
           this.setState({
-            notifications: [...this.state.notifications, notif_instance]
+            notifications: farts
           });
 
         }
         ws.onclose = (_e) => {
-          if (!this.ws_unmounted) {
+          if (!this.ws_unmounted && !this.state.error) {
             setTimeout(this.ws_server, 10000);
           }
         }
@@ -164,7 +178,7 @@ export default class Notifications extends React.Component<{ set_party: Function
     return (
       <>
         {
-          this.state.notifications.sort((n1, n2) => { return n2.props.time - n1.props.time }).map((notification: Notification, index) => (
+          this.state.notifications.sort((n1, n2) => { return n2.props.time - n1.props.time }).map((notification: JSX.Element, index) => (
             <div key={index}>{notification} </div>
           ))
         }

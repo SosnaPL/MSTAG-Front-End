@@ -53,7 +53,9 @@ class Register extends React.Component<RouteComponentProps, any> {
                   onChange={this.onChange.bind(this)}
                   value={this.state.username}
                 />
-                <div>{this.state.errors["username"]}</div>
+                <Row>
+                  {this.state.errors["username"]}
+                </Row>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Password:</Form.Label>
@@ -63,7 +65,9 @@ class Register extends React.Component<RouteComponentProps, any> {
                   onChange={this.onChange.bind(this)}
                   value={this.state.password}
                 />
-                <div>{this.state.errors["password"]}</div>
+                <Row>
+                  {this.state.errors["password"]}
+                </Row>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Email:</Form.Label>
@@ -73,7 +77,9 @@ class Register extends React.Component<RouteComponentProps, any> {
                   onChange={this.onChange.bind(this)}
                   value={this.state.email}
                 />
-                <div>{this.state.errors["email"]}</div>
+                <Row>
+                  {this.state.errors["email"]}
+                </Row>
               </Form.Group>
               <Row>
                 <Col className="d-flex justify-content-center">
