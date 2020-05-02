@@ -2,6 +2,18 @@
 body {
   font-family: "Quicksand", sans-serif;
   background-image: url("../public/tank-bg.jpg");
+  font-size: 1vw;
+}
+
+body::after {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1; // hide images
+  content: url("../public/google/btn_google_signin_light_normal_web.png")
+    url("../public/google/btn_google_signin_light_focus_web.png")
+    url("../public/ww.png"); // load images
 }
 
 ::-webkit-scrollbar {
@@ -43,8 +55,8 @@ body {
 
 .content_container {
   background-color: rgba(27, 21, 21, 0.5);
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-    1px 1px 0 #000;
+  /*   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000; */
   color: white;
   height: 90%;
   width: 75%;
@@ -61,6 +73,7 @@ body {
 }
 
 .btn {
+  font-size: 1vw;
   margin: 10px;
   text-decoration: none;
   color: white;
@@ -82,13 +95,14 @@ body {
 }
 
 .friend_info {
-  font-size: 20px;
+  font-size: 1vw;
   display: flex;
   flex-direction: row;
   width: 75%;
 }
 
 .friend_menu {
+  font-size: 1vw;
   width: 25%;
   height: auto;
   align-items: center;
@@ -147,7 +161,11 @@ body {
 }
 
 .friend_tooltip_stats > span {
-  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
 }
 
 .kick_icon {
@@ -157,6 +175,7 @@ body {
   transition: ease-in 0.3s;
   cursor: pointer;
 }
+
 .invite_icon,
 .remove_icon {
   margin-right: 5px;
@@ -184,7 +203,6 @@ svg:hover {
 .party_member {
   position: relative;
   margin-bottom: 10px;
-  font-size: 20px;
   background-color: rgba(27, 21, 21, 0.65);
 }
 
@@ -192,7 +210,6 @@ svg:hover {
 .clan {
   position: relative;
   margin-bottom: 10px;
-  font-size: 20px;
   background-color: rgba(27, 21, 21, 0.65);
 }
 
@@ -270,7 +287,16 @@ svg:hover {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 10%;
+  height: 5%;
+}
+
+.chat_tab {
+  transition: ease-in 0.3s;
+}
+
+.chat_tab:hover {
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
 }
 
 .chat_messages {
@@ -279,8 +305,8 @@ svg:hover {
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  height: 83%;
-  max-height: 83%;
+  height: 88%;
+  max-height: 88%;
   padding: 10px;
 }
 
@@ -311,6 +337,17 @@ svg:hover {
   width: 100%;
   height: 7%;
   padding: 5px;
+}
+
+.form-control {
+  width: 200px !important;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .input_holder > input[type="text"] {
@@ -456,12 +493,69 @@ input[type="text"]:focus {
 .game_container {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .game_container > canvas {
-  background-color: white;
+  background-color: gray;
+}
+
+.canvas_scroll_left,
+.canvas_scroll_right {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  width: 7%;
+  height: 100%;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+  background-color: #555;
+  opacity: 0.2;
+  transition: opacity 0.3s ease-in;
+}
+
+.canvas_scroll_left {
+  left: 0;
+  background: linear-gradient(
+    to left,
+    rgba(16, 16, 16, 0),
+    rgba(16, 16, 16, 1)
+  );
+}
+
+.canvas_scroll_right {
+  right: 0;
+  background: linear-gradient(
+    to right,
+    rgba(16, 16, 16, 0),
+    rgba(16, 16, 16, 1)
+  );
+}
+
+.canvas_scroll_left:hover,
+.canvas_scroll_right:hover {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0.6;
 }
 
 .opaque {
   opacity: 1 !important;
+}
+
+.login_ {
+  padding: 10px;
+  width: auto;
+  height: auto;
+}
+
+.login_google {
+  content: url("../public/google/btn_google_signin_light_normal_web.png");
+  transition: ease-in 0.3s;
+}
+
+.login_google:hover {
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
+  content: url("../public/google/btn_google_signin_light_focus_web.png");
 }

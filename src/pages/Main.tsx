@@ -2,11 +2,12 @@ import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-import { API_URL } from '../components/constants';
+import { post, get, CurrentUser } from "../components/constants";
 
 interface MainState {
   loading: boolean;
   error_type: string;
+  oauth_logging_in: boolean;
 }
 
 class Main extends React.Component<RouteComponentProps, MainState> {
@@ -16,10 +17,13 @@ class Main extends React.Component<RouteComponentProps, MainState> {
     this.state = {
       loading: true,
       error_type: "",
+      oauth_logging_in: false,
     }
   }
 
   presence_ws: WebSocket = null;
+  params = null;
+  code = null;
 
   connect_presence() {
     return new Promise((resolve, reject) => {
@@ -44,40 +48,65 @@ class Main extends React.Component<RouteComponentProps, MainState> {
     })
   }
 
-  is_logged_in() {
+  logInGoogle() {
     if (localStorage.getItem("token")) {
-      return fetch(API_URL + "/users/profile/", {
-        headers: {
-          Authorization: "Token " + localStorage.getItem("token")
-        }
-      })
-        .then((res) => {
-          if (!res.ok) {
-            console.log("bad token")
-            localStorage.removeItem("token");
-            this.setState({ loading: false })
-            return
+      console.log("no token")
+      return;
+    }
+    if (!window.location.pathname.startsWith("/oauth/google")) {
+      return;
+    }
+    if (!this.code) {
+      console.log("no code")
+      return;
+    }
+    this.setState({ loading: false, oauth_logging_in: true });
+    post("/oauth/google/", {
+      code: this.params.get("code")
+    })
+      .then(response => {
+        console.log("Logged in via google");
+        localStorage.setItem("token", response.data.token);
+        CurrentUser.token = response.data.token;
+        get("/users/profile/").then((res) => {
+          console.log(res.data.username)
+          if (res.data.username) {
+            window.location.href =
+              location.protocol +
+              "//" +
+              location.hostname +
+              (location.port ? ":" + location.port : "") +
+              "/";
           }
           else {
-            this.connect_presence().then(() => {
-              console.log("lobby")
-              this.props.history.push("/lobby")
-            }).catch((err) => {
-              this.setState({ error_type: err, loading: false })
-            })
-
+            this.props.history.push("/set_nick");
           }
         })
-        .catch(() => {
-          console.log("timeout")
-          localStorage.removeItem("token");
-          this.setState({ loading: false })
-        })
-    }
-    else {
-      this.setState({ loading: false })
-      console.log("no token")
-    }
+
+      })
+  }
+
+  logInAccount() {
+    CurrentUser.token = localStorage.getItem("token")
+    return get("/users/profile/")
+      .then((res) => {
+        if (!res.data.username) {
+          this.props.history.push("/set_nick");
+        }
+        else {
+          this.connect_presence().then(() => {
+            console.log("lobby")
+            this.props.history.push("/lobby")
+          }).catch((err) => {
+            this.setState({ error_type: err, loading: false })
+          })
+        }
+      })
+      .catch(() => {
+        console.log("timeout")
+        localStorage.removeItem("token");
+        this.setState({ loading: false })
+      })
   }
 
   removeToken = () => {
@@ -87,10 +116,28 @@ class Main extends React.Component<RouteComponentProps, MainState> {
   }
 
   componentDidMount() {
-    this.is_logged_in()
+    this.params = new URLSearchParams(window.location.search);
+    this.code = this.params.get("code");
+    if (this.code) {
+      this.logInGoogle();
+    }
+    else if (localStorage.getItem("token")) {
+      this.logInAccount();
+    }
+    else {
+      this.setState({ loading: false });
+      console.log("no token");
+    }
   }
 
   public render(): JSX.Element {
+    if (this.state.oauth_logging_in) {
+      return (
+        <div className="d-flex justify-content-center">
+          <h2>Authorizing...</h2>
+        </div>
+      )
+    }
     if (this.state.loading) {
       return (
         <div className="d-flex justify-content-center">
@@ -116,21 +163,27 @@ class Main extends React.Component<RouteComponentProps, MainState> {
         <Row>
           <Col className="d-flex justify-content-center">
             <Link to="/login">
-              <Button variant="outline-dark" size="lg">Log in!</Button>
+              <Button variant="outline-dark" size="lg">
+                Log in!
+              </Button>
             </Link>
           </Col>
         </Row>
         <Row>
           <Col className="d-flex justify-content-center">
             <Link to="/register">
-              <Button variant="outline-dark" size="lg">Sign up!</Button>
+              <Button variant="outline-dark" size="lg">
+                Sign up!
+              </Button>
             </Link>
           </Col>
         </Row>
         <Row>
           <Col className="d-flex justify-content-center guest">
-            <Link to="/lobby">
-              <Button variant="outline-dark" size="lg">Play as guest!</Button>
+            <Link to="/login_guest">
+              <Button variant="outline-dark" size="lg">
+                Play as guest!
+              </Button>
             </Link>
           </Col>
         </Row>

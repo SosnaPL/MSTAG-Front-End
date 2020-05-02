@@ -4,17 +4,17 @@ import { get } from './constants'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import FriendTooltip from './friend_tooltip'
+import FriendTooltip from './friend_tooltip';
 
 
-export interface FriendsProps {
+export interface FriendProps {
   id: number,
   username: string;
   last_seen: number;
   is_online: boolean;
 }
 
-export default class FriendsContainer extends React.Component<{ friends: FriendsProps[] | null, update_friends: Function }> {
+export default class FriendsContainer extends React.Component<{ friends: FriendProps[] | null, update_friends: Function }> {
   public render(): JSX.Element {
     if (!this.props.friends) {
       setTimeout(this.props.update_friends, 10000);
@@ -35,14 +35,14 @@ export default class FriendsContainer extends React.Component<{ friends: Friends
         {this.props.friends.filter((friend) => { return friend.is_online }).map((friend) => (
           <Row key={friend.id}>
             <Col className="d-flex justify-content-start pb-3">
-              <Friends friends={friend} update_friends={this.props.update_friends} />
+              <Friends friend={friend} update_friends={this.props.update_friends} />
             </Col>
           </Row>
         ))}
         {this.props.friends.filter((friend) => { return !friend.is_online }).map((friend) => (
           <Row key={friend.id}>
             <Col className="d-flex justify-content-start pb-3">
-              <Friends friends={friend} update_friends={this.props.update_friends} />
+              <Friends friend={friend} update_friends={this.props.update_friends} />
             </Col>
           </Row>
         ))}
@@ -51,7 +51,7 @@ export default class FriendsContainer extends React.Component<{ friends: Friends
   }
 }
 
-class Friends extends React.Component<{ friends: FriendsProps, update_friends: Function }, { tooltip_friend_id: null | number }> {
+class Friends extends React.Component<{ friend: FriendProps, update_friends: Function }, { tooltip_friend_id: null | number }> {
 
   constructor(props) {
     super(props)
@@ -109,18 +109,27 @@ class Friends extends React.Component<{ friends: FriendsProps, update_friends: F
   public render(): JSX.Element {
     const {
       username, last_seen, id, is_online
-    } = this.props.friends;
+    } = this.props.friend;
 
     if (is_online) {
       return (
-        <div data-tip data-for={id.toString()} className="friend_container p-2 rounded">
-          <ReactTooltip id={id.toString()}/* delayHide={100} clickable={true} */ className="opaque" place="top" type="dark" effect="solid" getContent={() => {
-            return (
-              <FriendTooltip id={this.state.tooltip_friend_id} />
-            )
-          }} afterShow={() => {
-            this.setState({ tooltip_friend_id: id })
-          }} />
+        <div data-tip data-for={id.toString() + "_friend"} className="friend_container p-2 rounded">
+          <ReactTooltip id={id.toString() + "_friend"}
+            className="opaque"
+            place="left"
+            type="dark"
+            effect="solid"
+            getContent={() => {
+              return (
+                <FriendTooltip id={this.state.tooltip_friend_id} />
+              )
+            }}
+            afterHide={() => {
+              this.setState({ tooltip_friend_id: null })
+            }}
+            afterShow={() => {
+              this.setState({ tooltip_friend_id: id })
+            }} />
           <div className="friend_info">
             🟢&nbsp;{username}
           </div>

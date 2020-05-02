@@ -3,7 +3,7 @@ import { Button, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { get, CurrentUser, get_suspense } from '../components/constants';
 import NotificationsContainer from '../components/notification_container';
-import FriendsContainer, { FriendsProps } from '../components/friends';
+import FriendsContainer, { FriendProps } from '../components/friends';
 import Party, { PartyProps } from '../components/party';
 import Chat from '../components/chat';
 import InviteFriend from '../components/invite_friend';
@@ -13,7 +13,7 @@ interface LobbyState {
   nick: string;
   clan: string;
   avatar: string;
-  friends: FriendsProps[] | null;
+  friends: FriendProps[] | null;
   party: PartyProps[] | undefined;
   party_leader: PartyProps | undefined;
   play_button_enabled: boolean;
@@ -79,8 +79,8 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
       in_game: false,
     }
     console.log(this.state)
-    CurrentUser.username = profile.username;
-    CurrentUser.player_id = profile.id;
+    CurrentUser.username = profile.response.username;
+    CurrentUser.player_id = profile.response.id;
   }
 
   _play = () => {
@@ -112,7 +112,9 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
               <Image src={this.state.avatar} rounded />
             </div>
             <div className="chat rounded">
-              <Chat />
+              <Chat
+                friends={this.state.friends}
+              />
             </div>
           </div>
           <div className="middle">

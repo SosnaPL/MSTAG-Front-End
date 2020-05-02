@@ -82,12 +82,9 @@ export default class InviteFriend extends React.Component<InviteFriendProps, Inv
     }
     console.log("send invite")
     get("/users/profile/friends/add/" + this.state.id.toString() + "/")
-      .then(() => {
+      .finally(() => {
         this.hideModal();
       })
-      .catch(() => {
-        this.hideModal();
-      });
   }
 
   public render(): JSX.Element {

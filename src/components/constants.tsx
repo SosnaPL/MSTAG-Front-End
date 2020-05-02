@@ -4,7 +4,12 @@ import useFetch from 'fetch-suspense';
 export const API_URL = "http://25.64.141.174:8000/api/v1";
 
 export function get(url: string): Promise<any> {
-  return axios.get(API_URL + url, { headers: { Authorization: "Token " + CurrentUser.token } });
+  if (CurrentUser.token) {
+    return axios.get(API_URL + url, { headers: { Authorization: "Token " + CurrentUser.token } });
+  }
+  else {
+    return axios.get(API_URL + url)
+  }
 }
 
 export function post(url: string, data: Object | string): Promise<any> {

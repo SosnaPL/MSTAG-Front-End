@@ -1,8 +1,8 @@
 import React from 'react';
-import { Form, FormControl, Button, Row, Col } from 'react-bootstrap';
+import { Form, FormControl, Button, Row, Col, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
 import { Link } from 'react-router-dom';
-import { post } from '../components/constants'
+import { post } from '../components/constants';
 
 class Login extends React.Component<RouteComponentProps, any> {
 
@@ -32,19 +32,24 @@ class Login extends React.Component<RouteComponentProps, any> {
       })
       .catch(error => {
         console.log(error);
-        this.setState({ error_msg: error.response.data.detail })
+        this.setState({ error_msg: error.message })
       });
   };
 
   public render(): JSX.Element {
     return (
       <>
+        <div className="login_">
+          <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=758097201499-i301bgsnrfiu846gbuahl2kcq4qtmuht.apps.googleusercontent.com&redirect_uri=http://localhost:8080/oauth/google&scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&include_granted_scopes=true&access_type=online">
+            <Image className="login_google" />
+          </a>
+        </div>
         <Row>
           <Col className="d-flex justify-content-center">
             <Form onSubmit={this.logIn}>
               <Form.Group>
-                <Form.Label>Login:</Form.Label>
                 <FormControl
+                  placeholder="Login"
                   name="login"
                   type="text"
                   value={this.state.login}
@@ -52,8 +57,8 @@ class Login extends React.Component<RouteComponentProps, any> {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Password:</Form.Label>
                 <FormControl
+                  placeholder="Password"
                   name="password"
                   type="password"
                   value={this.state.password}
@@ -61,14 +66,14 @@ class Login extends React.Component<RouteComponentProps, any> {
                 />
               </Form.Group>
               <Row>
-                <Col className="d-flex justify-content-center">
+                <Col className="d-flex justify-content-center" >
                   {this.state.error_msg}
                 </Col>
               </Row>
               <Row>
                 <Col className="d-flex justify-content-center">
                   <Button variant="outline-dark" size="lg" type="submit">
-                    Send
+                    Log In!
                   </Button>
                 </Col>
               </Row>

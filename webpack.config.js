@@ -11,6 +11,7 @@ module.exports = {
     filename: "[name]-[hash:8].bundle.js",
     chunkFilename: "[name]-[hash:8].chunk.js",
     path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -54,6 +55,9 @@ module.exports = {
       name: (entrypoint) => `runtime~${entrypoint.name}`,
     },
   },
+  devServer: {
+    historyApiFallback: true,
+  },
 };
 
 if (process.env.NODE_ENV === "development") {
@@ -63,6 +67,7 @@ if (process.env.NODE_ENV === "development") {
       filename: "[name].bundle.js",
       chunkFilename: "[name].chunk.js",
       path: path.resolve(__dirname, "dist"),
+      publicPath: "/",
     },
     devServer: {
       contentBase: path.join(__dirname, "dist"),
