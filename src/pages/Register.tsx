@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormControl, Row, Col, Image } from 'react-bootstrap';
+import { Button, Form, FormControl, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
 import { post } from '../components/constants'
@@ -45,7 +45,7 @@ class Register extends React.Component<RouteComponentProps, any> {
       <>
         <div className="login_">
           <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=758097201499-i301bgsnrfiu846gbuahl2kcq4qtmuht.apps.googleusercontent.com&redirect_uri=http://localhost:8080/oauth/google&scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&include_granted_scopes=true&access_type=online">
-            <Image className="login_google" />
+            <div className="login_google" />
           </a>
         </div>
         <Row>

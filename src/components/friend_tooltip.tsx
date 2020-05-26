@@ -50,7 +50,7 @@ export default class FriendTooltip extends React.Component<{ id: number }, Frien
         <div className="friend_tooltip_avatar">
           <Image
             src={
-              this.state.avatar ? this.state.avatar : "src/public/avatar.jpg"
+              this.state.avatar ? this.state.avatar : require("../public/avatar.jpg")
             }
             rounded
           />
