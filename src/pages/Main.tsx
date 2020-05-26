@@ -27,7 +27,7 @@ class Main extends React.Component<RouteComponentProps, MainState> {
 
   connect_presence() {
     return new Promise((resolve, reject) => {
-      this.presence_ws = new WebSocket("ws://25.64.141.174:8769");
+      this.presence_ws = new WebSocket("ws://micromstag.westeurope.cloudapp.azure.com:8769");
       this.presence_ws.onopen = () => {
         console.log("ONOPEN")
         this.presence_ws.send(JSON.stringify(localStorage.getItem("token")));
@@ -157,7 +157,7 @@ class Main extends React.Component<RouteComponentProps, MainState> {
       <>
         <Row>
           <Col className="d-flex justify-content-center">
-            <h2>Welcome to Definitely not umag2</h2>
+            <h2>Welcome to MSTAG!</h2>
           </Col>
         </Row>
         <Row>

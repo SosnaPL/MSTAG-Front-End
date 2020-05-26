@@ -1,7 +1,7 @@
 import axios from "axios";
 import useFetch from 'fetch-suspense';
 
-export const API_URL = "http://25.64.141.174:8000/api/v1";
+export const API_URL = "http://micromstag.westeurope.cloudapp.azure.com:8000/api/v1";
 
 export function get(url: string): Promise<any> {
   if (CurrentUser.token) {
