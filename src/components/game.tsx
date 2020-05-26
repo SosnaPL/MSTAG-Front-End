@@ -490,15 +490,15 @@ export default class Game extends React.Component {
     fitToContainer(canvas);
     tank_image = new Image();
     tank_image.crossOrigin = "anonymous"
-    tank_image.src = "/src/public/tank.png";
+    tank_image.src = require("../public/tank.png").default;
     tank_image.onload = () => {
       barrel_image = new Image();
       barrel_image.crossOrigin = "anonymous"
-      barrel_image.src = "/src/public/tank_barrel.png"
+      barrel_image.src = require("../public/tank_barrel.png").default
       barrel_image.onload = () => {
         broken_image = new Image()
         broken_image.crossOrigin = "anonymous"
-        broken_image.src = "/src/public/tank_broken.png"
+        broken_image.src = require("../public/tank_broken.png").default
         broken_image.onload = () => {
           if (GameServer.address) {
             connect(GameServer.address);
