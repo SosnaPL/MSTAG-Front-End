@@ -27,7 +27,7 @@ class Main extends React.Component<RouteComponentProps, MainState> {
 
   connect_presence() {
     return new Promise((resolve, reject) => {
-      this.presence_ws = new WebSocket("ws://micromstag.westeurope.cloudapp.azure.com:8769");
+      this.presence_ws = new WebSocket("wss://micromstag.westeurope.cloudapp.azure.com:8869");
       this.presence_ws.onopen = () => {
         console.log("ONOPEN")
         this.presence_ws.send(JSON.stringify(localStorage.getItem("token")));
