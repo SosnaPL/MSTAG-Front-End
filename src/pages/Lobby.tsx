@@ -73,7 +73,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
       friends: friends.ok ? friends.response : null,
       nick: profile.response.username,
       clan: profile.response.clan ? profile.response.clan.name : "No clan",
-      avatar: profile.response.avatar ? profile.response.avatar : "src/public/avatar.jpg",
+      avatar: profile.response.avatar ? profile.response.avatar : process.env.PUBLIC_URL + "/avatar.jpg",
       id: profile.response.id,
       play_button_enabled: true,
       in_game: false,
