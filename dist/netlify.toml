@@ -1,4 +1,4 @@
 [[redirects]]
-  from = "/oauth"
+  from = "/oauth/*"
   to = "/"
   status = 302
