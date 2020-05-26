@@ -7,7 +7,6 @@ import FriendsContainer, { FriendProps } from '../components/friends';
 import Party, { PartyProps } from '../components/party';
 import Chat from '../components/chat';
 import InviteFriend from '../components/invite_friend';
-import Avatar from '../public/avatar.jpg';
 
 interface LobbyState {
   id: number;
@@ -74,7 +73,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
       friends: friends.ok ? friends.response : null,
       nick: profile.response.username,
       clan: profile.response.clan ? profile.response.clan.name : "No clan",
-      avatar: profile.response.avatar ? profile.response.avatar : Avatar,
+      avatar: profile.response.avatar ? profile.response.avatar : require('../public/avatar.jpg'),
       id: profile.response.id,
       play_button_enabled: true,
       in_game: false,
@@ -110,6 +109,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
+              {console.log(this.state.avatar)}
               <Image src={this.state.avatar} rounded />
             </div>
             <div className="chat rounded">
