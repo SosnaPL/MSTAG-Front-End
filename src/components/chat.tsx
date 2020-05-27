@@ -74,11 +74,12 @@ export default class Chat extends React.Component<{ friends: FriendProps[] }, Ch
           this.setState(chat_type_state);
         }
         ws.onclose = (_e) => {
-          if (!this.ws_unmounted) {
+          if (!this.ws_unmounted && !this.state.error) {
             setTimeout(this.ws_server, 10000);
           }
         }
         ws.onerror = (_e) => {
+          this.ws_unmounted = true
           setTimeout(this.ws_server, 10000);
           this.setState({ connecting: false, error: "Connection failed :(" })
         }
