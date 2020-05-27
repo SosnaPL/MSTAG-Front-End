@@ -91,7 +91,7 @@ export default class InviteFriend extends React.Component<InviteFriendProps, Inv
     return (
       <>
         <div className="d-flex justify-content-center">
-          <Button disabled={this.props.button_status && !this.props.nick.includes("Guest")} variant="dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
+          <Button disabled={this.props.button_status && this.props.nick.includes("Guest")} variant="dark" onClick={this.showModal.bind(this)}>Send Friend Request</Button>
         </div>
         <div className="modal_add_friends_container" style={{ display: this.state.modal_visiblity }}>
           <div className="modal_add_friends">
