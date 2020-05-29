@@ -2,7 +2,9 @@ import React from 'react';
 import { Button, Form, FormControl, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-import { post } from '../components/constants'
+import { post } from '../components/constants';
+import GoogleLogin from 'react-google-login';
+
 class Register extends React.Component<RouteComponentProps, any> {
   state = {
     username: "",
@@ -10,6 +12,17 @@ class Register extends React.Component<RouteComponentProps, any> {
     password: "",
     errors: { username: [], email: [], password: [] },
   };
+
+  responseGoogle = (response) => {
+    console.log(response)
+    post("/oauth/google/", {
+      code: response.code
+    })
+      .then((res) => {
+        localStorage.setItem("token", res.data.token)
+        this.props.history.push("/")
+      })
+  }
 
   componentDidMount() {
     const { username, email, password } = this.state;
@@ -43,10 +56,15 @@ class Register extends React.Component<RouteComponentProps, any> {
     console.log(this.state.errors);
     return (
       <>
-        <div className="login_">
-          <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=758097201499-i301bgsnrfiu846gbuahl2kcq4qtmuht.apps.googleusercontent.com&redirect_uri=https://mstag.netlify.app/oauth/google&scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&include_granted_scopes=true&access_type=online">
-            <div className="login_google" />
-          </a>
+        <div style={{ margin: "10px" }}>
+          <GoogleLogin
+            clientId="758097201499-i301bgsnrfiu846gbuahl2kcq4qtmuht.apps.googleusercontent.com"
+            buttonText="Register"
+            onSuccess={this.responseGoogle}
+            onFailure={this.responseGoogle}
+            cookiePolicy={'single_host_origin'}
+            responseType="code"
+          />
         </div>
         <Row>
           <Col className="d-flex justify-content-center">
@@ -110,7 +128,7 @@ class Register extends React.Component<RouteComponentProps, any> {
                 <Col className="d-flex justify-content-center">
                   <Button variant="outline-dark" size="lg" type="submit">
                     Sign Up!
-                  </Button>
+                </Button>
                 </Col>
               </Row>
             </Form>
@@ -121,7 +139,7 @@ class Register extends React.Component<RouteComponentProps, any> {
             <Link to="/">
               <Button variant="outline-dark" size="lg">
                 Back
-              </Button>
+            </Button>
             </Link>
           </Col>
         </Row>

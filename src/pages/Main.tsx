@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from "react-router";
-import { post, get, CurrentUser } from "../components/constants";
+import { get, CurrentUser } from "../components/constants";
 
 interface MainState {
   loading: boolean;
@@ -48,44 +48,6 @@ class Main extends React.Component<RouteComponentProps, MainState> {
     })
   }
 
-  logInGoogle() {
-    if (localStorage.getItem("token")) {
-      console.log("no token")
-      return;
-    }
-    if (!window.location.pathname.startsWith("/oauth/google")) {
-      return;
-    }
-    if (!this.code) {
-      console.log("no code")
-      return;
-    }
-    this.setState({ loading: false, oauth_logging_in: true });
-    post("/oauth/google/", {
-      code: this.params.get("code")
-    })
-      .then(response => {
-        console.log("Logged in via google");
-        localStorage.setItem("token", response.data.token);
-        CurrentUser.token = response.data.token;
-        get("/users/profile/").then((res) => {
-          console.log(res.data.username)
-          if (res.data.username) {
-            window.location.href =
-              location.protocol +
-              "//" +
-              location.hostname +
-              (location.port ? ":" + location.port : "") +
-              "/";
-          }
-          else {
-            this.props.history.push("/set_nick");
-          }
-        })
-
-      })
-  }
-
   logInAccount() {
     CurrentUser.token = localStorage.getItem("token")
     return get("/users/profile/")
@@ -116,12 +78,7 @@ class Main extends React.Component<RouteComponentProps, MainState> {
   }
 
   componentDidMount() {
-    this.params = new URLSearchParams(window.location.search);
-    this.code = this.params.get("code");
-    if (this.code) {
-      this.logInGoogle();
-    }
-    else if (localStorage.getItem("token")) {
+    if (localStorage.getItem("token")) {
       this.logInAccount();
     }
     else {
