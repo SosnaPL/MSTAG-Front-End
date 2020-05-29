@@ -134,7 +134,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
               <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
                 {this.state.nick}
               </div>
-              <div className="d-flex justify-content-center shadow-sm p-2 rounded clan">
+              <div className="d-flex justify-content-center shadow-sm p-2 rounded clan" style={{ margin: "0px" }}>
                 {this.state.clan}
               </div>
               <div className="d-flex justify-content-center mb-2">
@@ -151,7 +151,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
                 user_nick={this.state.nick}
               />
             </div>
-            <h2 className="d-flex justify-content-center">Friends:</h2>
+            <h2 className="d-flex justify-content-center" style={{ margin: "0px" }}>Friends:</h2>
             <InviteFriend nick={this.state.nick} button_status={!this.state.friends} />
             <div className="lobby_friends">
               <FriendsContainer
