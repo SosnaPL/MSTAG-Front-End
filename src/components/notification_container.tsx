@@ -172,7 +172,7 @@ export default class NotificationsContainer extends React.Component<Notification
   public render(): JSX.Element {
     if (this.state.error) {
       return (
-        <h1>{this.state.error}</h1>
+        <h1 style={{ textAlign: "center" }}>{this.state.error}</h1>
       )
     }
     return (

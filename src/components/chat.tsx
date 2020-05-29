@@ -351,15 +351,16 @@ export default class Chat extends React.Component<{ friends: FriendProps[] }, Ch
                   >
                     <div
                       className="message_name"
-                      data-tip
-                      data-for={message.id.toString() + "_chat"}
                       style={{
                         borderRight:
                           "2px solid #" +
                           this.intToRGB(this.hashCode(message.name)).toString(),
                       }}
                     >
-                      <span>
+                      <span
+                        data-tip
+                        data-for={message.id.toString() + "_chat"}
+                      >
                         {message.name}
                         <ReactTooltip
                           id={message.id.toString() + "_chat"}
