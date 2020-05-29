@@ -99,12 +99,23 @@ export default class InviteFriend extends React.Component<InviteFriendProps, Inv
               &times;
             </div>
             <div>
-              Username: <input ref={this.state.usernameInputRef} type="text" spellCheck="false" onChange={this.onChange.bind(this)} onKeyDown={this.handleKeyDown.bind(this)} />
+              Username: <input ref={this.state.usernameInputRef} type="text" spellCheck="false" onChange={this.onChange.bind(this)} onKeyDown={this.handleKeyDown.bind(this)}
+                style={{
+                  color: "white",
+                  backgroundColor: "#3c4043",
+                  border: "none",
+                  borderRadius: "0.25rem"
+                }}
+              />
             </div>
             <div>
               {this.state.user_exists ? "✔️" : "❌"}
             </div>
-            <Button variant="outline-dark" disabled={this.state.invite_button_disabled} onClick={this.sendInvite}>Send</Button>
+            <Button variant="outline-dark" disabled={this.state.invite_button_disabled} onClick={this.sendInvite}
+              style={{ color: "#3c4043" }}
+            >
+              Send
+            </Button>
           </div>
         </div>
       </>
