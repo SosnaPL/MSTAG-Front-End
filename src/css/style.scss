@@ -540,3 +540,15 @@ input[type="text"]:focus {
 .opaque {
   opacity: 1 !important;
 }
+
+.online_counter {
+  position: absolute;
+  display: flex;
+  border: 2px solid black;
+  background-color: #19191a;
+  color: white;
+  text-align: center;
+  right: 0;
+  min-width: 10%;
+  height: 100%;
+}
