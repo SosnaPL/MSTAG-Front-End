@@ -18,6 +18,7 @@ interface LobbyState {
   party_leader: PartyProps | undefined;
   play_button_enabled: boolean;
   in_game: boolean;
+  online: string;
 }
 
 class Lobby extends React.Component<RouteComponentProps, LobbyState> {
@@ -66,6 +67,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
     const team = get_suspense("/team/")
     const friends = get_suspense("/users/profile/friends/");
     const profile = get_suspense("/users/profile/");
+    const online = get_suspense("/users/online/");
     //const error = get_suspense("/error/");
     this.state = {
       party: team.response.members,
@@ -75,8 +77,9 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
       clan: profile.response.clan ? profile.response.clan.name : "No clan",
       avatar: profile.response.avatar ? profile.response.avatar : Avatar,
       id: profile.response.id,
+      online: online.response.count,
       play_button_enabled: true,
-      in_game: false,
+      in_game: false
     }
     console.log(this.state)
     CurrentUser.username = profile.response.username;
@@ -165,6 +168,9 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
           <Button disabled={!this.state.play_button_enabled} variant="dark" size="lg" onClick={this._play}>
             Play!
           </Button>
+          <div className="online_counter">
+            {this.state.online}
+          </div>
         </div>
       </div >
     );
