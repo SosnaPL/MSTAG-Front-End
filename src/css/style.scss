@@ -11,7 +11,7 @@ body::after {
   height: 0;
   overflow: hidden;
   z-index: -1; // hide images
-  content: url("../public/ww.png"); // load images
+  content: url("../public/ww.png") url("../public/avatar.png"); // load images
 }
 
 ::-webkit-scrollbar {
