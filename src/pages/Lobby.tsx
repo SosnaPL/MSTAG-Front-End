@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Image } from 'react-bootstrap';
 import { withRouter, RouteComponentProps } from "react-router";
-import { get, CurrentUser, get_suspense } from '../components/constants';
+import { get, CurrentUser, get_suspense, Avatar } from '../components/constants';
 import NotificationsContainer from '../components/notification_container';
 import FriendsContainer, { FriendProps } from '../components/friends';
 import Party, { PartyProps } from '../components/party';
@@ -73,7 +73,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
       friends: friends.ok ? friends.response : null,
       nick: profile.response.username,
       clan: profile.response.clan ? profile.response.clan.name : "No clan",
-      avatar: profile.response.avatar ? profile.response.avatar : require('../public/avatar.jpg').default,
+      avatar: profile.response.avatar ? profile.response.avatar : Avatar,
       id: profile.response.id,
       play_button_enabled: true,
       in_game: false,

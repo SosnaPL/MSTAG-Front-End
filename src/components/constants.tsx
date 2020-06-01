@@ -38,3 +38,5 @@ export function get_suspense(url: string): any {
 export const CurrentUser = { username: "", player_id: -1, token: "" };
 
 export const GameServer = { address: "" };
+
+export const Avatar: string = require("../public/avatar.png").default

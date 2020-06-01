@@ -1,5 +1,5 @@
 import React from 'react';
-import { get } from './constants';
+import { get, Avatar } from './constants';
 import { Image } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSkull, faCrown, faGamepad } from '@fortawesome/free-solid-svg-icons';
@@ -50,7 +50,7 @@ export default class FriendTooltip extends React.Component<{ id: number }, Frien
         <div className="friend_tooltip_avatar">
           <Image
             src={
-              this.state.avatar ? this.state.avatar : require("../public/avatar.jpg").default
+              this.state.avatar ? this.state.avatar : Avatar
             }
             rounded
           />

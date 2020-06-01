@@ -1,5 +1,5 @@
 import React from 'react';
-import { get, CurrentUser, GameServer } from "../components/constants";
+import { get, CurrentUser, GameServer, Avatar } from "../components/constants";
 
 const GRAVITY = 500;
 const FORCE_MULTIPLIER = 3;
@@ -490,15 +490,15 @@ export default class Game extends React.Component {
     fitToContainer(canvas);
     tank_image = new Image();
     tank_image.crossOrigin = "anonymous"
-    tank_image.src = require("../public/tank.png").default;
+    tank_image.src = Avatar;
     tank_image.onload = () => {
       barrel_image = new Image();
       barrel_image.crossOrigin = "anonymous"
-      barrel_image.src = require("../public/tank_barrel.png").default
+      barrel_image.src = Avatar
       barrel_image.onload = () => {
         broken_image = new Image()
         broken_image.crossOrigin = "anonymous"
-        broken_image.src = require("../public/tank_broken.png").default
+        broken_image.src = Avatar
         broken_image.onload = () => {
           if (GameServer.address) {
             connect(GameServer.address);
