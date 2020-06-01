@@ -169,7 +169,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
             Play!
           </Button>
         </div>
-        <div className="online_counter">
+        <div className="online_counter rounded">
           <p>{this.state.online}</p>
         </div>
       </div>
