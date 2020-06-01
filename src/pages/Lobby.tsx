@@ -168,11 +168,11 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
           <Button disabled={!this.state.play_button_enabled} variant="dark" size="lg" onClick={this._play}>
             Play!
           </Button>
-          <div className="online_counter">
-            <p>{this.state.online}</p>
-          </div>
         </div>
-      </div >
+        <div className="online_counter">
+          <p>{this.state.online}</p>
+        </div>
+      </div>
     );
   }
 }

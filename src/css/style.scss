@@ -544,14 +544,14 @@ input[type="text"]:focus {
 .online_counter {
   position: absolute;
   display: flex;
-  border: 2px solid black;
   background-color: #19191a;
   color: white;
   align-items: center;
   justify-content: center;
   right: 0;
+  bottom: 0;
   min-width: 5%;
-  height: 80%;
+  height: 5%;
 }
 
 .online_counter > p {
