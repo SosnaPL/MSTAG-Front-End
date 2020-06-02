@@ -18,7 +18,7 @@ interface LobbyState {
   party_leader: PartyProps | undefined;
   play_button_enabled: boolean;
   in_game: boolean;
-  online: string;
+  online: number;
 }
 
 class Lobby extends React.Component<RouteComponentProps, LobbyState> {
@@ -168,9 +168,16 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
           <Button disabled={!this.state.play_button_enabled} variant="dark" size="lg" onClick={this._play}>
             Play!
           </Button>
-        </div>
-        <div className="online_counter rounded">
-          <p>{this.state.online}</p>
+          <div className="online_counter rounded">
+            <p>
+              {
+                this.state.online > 1 ?
+                  this.state.online.toString() + " players online"
+                  :
+                  this.state.online.toString() + " player online"
+              }
+            </p>
+          </div>
         </div>
       </div>
     );
