@@ -108,7 +108,7 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
 
   public render(): JSX.Element {
     return (
-      <div className="p-3 klamie rounded">
+      <div className="p-3 lobby rounded">
         <div className="lobby_container">
           <div className="left">
             <div className="avatar_holder p-2">
@@ -133,29 +133,31 @@ class Lobby extends React.Component<RouteComponentProps, LobbyState> {
             </div>
           </div>
           <div className="right">
-            <div className="user_info">
-              <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
-                {this.state.nick}
+            <div className="lobby_info">
+              <div className="user_info">
+                <div className="d-flex justify-content-center shadow-sm p-2 rounded nick">
+                  {this.state.nick}
+                </div>
+                <div className="d-flex justify-content-center shadow-sm p-2 rounded clan" style={{ margin: "0px" }}>
+                  {this.state.clan}
+                </div>
+                <div className="d-flex justify-content-center mb-2">
+                  <Button variant="dark" size="sm" onClick={this.logOut}>
+                    Log Out!
+                  </Button>
+                </div>
               </div>
-              <div className="d-flex justify-content-center shadow-sm p-2 rounded clan" style={{ margin: "0px" }}>
-                {this.state.clan}
+              <h2 className="d-flex justify-content-center">Party:</h2>
+              <div className="lobby_team">
+                <Party
+                  party={this.state.party}
+                  leader={this.state.party_leader}
+                  user_nick={this.state.nick}
+                />
               </div>
-              <div className="d-flex justify-content-center mb-2">
-                <Button variant="dark" size="sm" onClick={this.logOut}>
-                  Log Out!
-                </Button>
-              </div>
+              <h2 className="d-flex justify-content-center" style={{ margin: "0px" }}>Friends:</h2>
+              <InviteFriend nick={this.state.nick} button_status={!this.state.friends} />
             </div>
-            <h2 className="d-flex justify-content-center">Party:</h2>
-            <div className="lobby_team">
-              <Party
-                party={this.state.party}
-                leader={this.state.party_leader}
-                user_nick={this.state.nick}
-              />
-            </div>
-            <h2 className="d-flex justify-content-center" style={{ margin: "0px" }}>Friends:</h2>
-            <InviteFriend nick={this.state.nick} button_status={!this.state.friends} />
             <div className="lobby_friends">
               <FriendsContainer
                 friends={this.state.friends}
